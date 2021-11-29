@@ -28,16 +28,16 @@ IP4_REGEX = (
 def main():
 
     parser = argparse.ArgumentParser(
-        description="Agregate subnets.",
-        epilog="ip-agregator v0.1.0",
+        description="Aggregate subnets.",
+        epilog="ip-aggregator v0.1.0",
     )
 
-    parser.add_argument("subnet", type=str, help="Subnets to agregate.", nargs="*")
+    parser.add_argument("subnet", type=str, help="Subnets to aggregate.", nargs="*")
 
     parser.add_argument(
         "-s",
         "--stdin",
-        help="Read addresses from stdin (only IPv4 Addresses Supported).",
+        help="Read addresses from stdin (only IPv4 addresses supported).",
         action="store_true",
     )
 
@@ -98,7 +98,7 @@ def main():
         )
         print("=" * 18)
 
-    new_subnets = agregate_subnets(subnets)
+    new_subnets = aggregate_subnets(subnets)
 
     print(f"{delimiter.join(format_address(i, args.mask_type) for i in new_subnets)}")
 
@@ -107,7 +107,7 @@ def main():
         print(f"{len(new_subnets)} subnets total")
 
 
-def agregate_subnets(subnets):
+def aggregate_subnets(subnets):
     return list(ipaddress.collapse_addresses(subnets))
 
 

@@ -1,15 +1,15 @@
-# ip-agregator
-Argregate IPs
+# ip-aggregator
+Aggregate IPs from arguments, stdin or both.
 
 
 ## Usage
 ```
-usage: ip-agregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-m {prefix,net,wildcard}] [subnet ...]
+usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-m {prefix,net,wildcard}] [subnet ...]
 
-Agregate subnets.
+Aggregate subnets.
 
 positional arguments:
-  subnet                Subnets to agregate.
+  subnet                Subnets to aggregate.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -20,7 +20,7 @@ optional arguments:
   -m {prefix,net,wildcard}, --mask-type {prefix,net,wildcard}
                         Use prefix length (default), net mask, or wildcard mask.
 
-ip-agregator v0.1.0
+ip-aggregator v0.1.1
 ```
 
 ## Examples
