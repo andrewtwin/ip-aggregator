@@ -29,7 +29,7 @@ def main():
 
     parser = argparse.ArgumentParser(
         description="Aggregate subnets.",
-        epilog="ip-aggregator v0.1.0",
+        epilog="ip-aggregator v0.2.0",
     )
 
     parser.add_argument("subnet", type=str, help="Subnets to aggregate.", nargs="*")
