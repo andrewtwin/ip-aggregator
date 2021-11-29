@@ -1,5 +1,5 @@
 # ip-aggregator
-Aggregate IPs from arguments, stdin or both.
+Aggregate IPs from arguments, stdin, or both.
 
 
 ## Usage
