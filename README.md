@@ -1,5 +1,5 @@
 # ip-aggregator
-Aggregate IPs from arguments, stdin, or both.
+Aggregate IPs from arguments, stdin, or both. Useful for making route and filter tables smaller.
 
 ## Usage
 ```
