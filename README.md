@@ -1,6 +1,8 @@
 # ip-aggregator
 Aggregate IPs from arguments, stdin, or both. Useful for making route and filter tables smaller.
 
+Does the opposite of [ip-deaggregator](https://github.com/andrewtwin/ip-deaggregator)
+
 ## Usage
 ```
 usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-m {prefix,net,wildcard}] [subnet ...]
@@ -21,6 +23,8 @@ optional arguments:
 
 ip-aggregator v0.2.0
 ```
+## Installation
+Download the python zipapp from the [releases](https://github.com/andrewtwin/ip-aggregator/releases) page.
 
 ## Examples
 
