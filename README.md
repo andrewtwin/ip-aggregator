@@ -24,7 +24,7 @@ ip-aggregator v0.2.0
 
 ## Examples
 
-Combine an address from both stdin and as arguments.
+Combine addresses from both stdin and as arguments.
 ```
 echo '192.168.0.0/24,192.168.2.0/24' | ip-aggregator -s 192.168.1.0/24 192.168.3.0/24
 Input 4 addresses: 192.168.0.0/24
