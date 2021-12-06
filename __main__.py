@@ -25,11 +25,11 @@ IP4_REGEX = (
 )
 
 
-def main():
+def main() -> None:
 
     parser = argparse.ArgumentParser(
         description="Aggregate subnets.",
-        epilog="ip-aggregator v0.2.0",
+        epilog="ip-aggregator v0.2.1",
     )
 
     parser.add_argument("subnet", type=str, help="Subnets to aggregate.", nargs="*")
@@ -107,11 +107,11 @@ def main():
         print(f"{len(new_subnets)} subnets total")
 
 
-def aggregate_subnets(subnets):
+def aggregate_subnets(subnets) -> list:
     return list(ipaddress.collapse_addresses(subnets))
 
 
-def format_address(address, mask="prefix"):
+def format_address(address, mask="prefix") -> str:
     if mask == "net":
         return address.with_netmask
     elif mask == "wildcard":

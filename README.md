@@ -21,7 +21,7 @@ optional arguments:
   -m {prefix,net,wildcard}, --mask-type {prefix,net,wildcard}
                         Use prefix length (default), net mask, or wildcard mask.
 
-ip-aggregator v0.2.0
+ip-aggregator v0.2.1
 ```
 ## Installation
 Download the python zipapp from the [releases](https://github.com/andrewtwin/ip-aggregator/releases) page.
