@@ -71,7 +71,7 @@ def main() -> None:
     parser.add_argument(
         "-A",
         "--no-aggregate",
-        help="Don't aggregate subnets. Just output found, valid networks and addresses",
+        help="Don't aggregate subnets. Just output valid networks and addresses",
         action="store_true",
     )
 
@@ -82,10 +82,8 @@ def main() -> None:
     subnets = []
 
     if args.stdin:
-
         for line in sys.stdin:
             read_subnets = re.findall(IP4_REGEX, line)
-
             for address in read_subnets:
                 try:
                     subnets.append(ipaddress.ip_network(address))
@@ -107,8 +105,9 @@ def main() -> None:
     if args.notquiet:
         print(
             f"Input {len(subnets)} addresses: {delimiter.join(format_address(i, args.mask_type) for i in subnets)}"
+            + NEWLINE
+            + "=" * 18
         )
-        print("=" * 18)
 
     if args.no_aggregate:
         if args.notquiet:
@@ -120,8 +119,7 @@ def main() -> None:
     print(f"{delimiter.join(format_address(i, args.mask_type) for i in new_subnets)}")
 
     if args.notquiet:
-        print("=" * 18)
-        print(f"{len(new_subnets)} subnets total")
+        print("=" * 18 + NEWLINE + f"{len(new_subnets)} subnets total")
 
 
 def aggregate_subnets(subnets) -> list:
