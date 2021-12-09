@@ -153,6 +153,19 @@ def main() -> None:
     else:
         new_subnets = aggregate_subnets(subnets)
 
+    processed_subnets = []
+
+     """Process Includes and Excludes"""
+    if len(includes) > 0:
+        include_subnets = aggregate_subnets(includes)
+        for subnet in new_subnets:
+            for include in include_subnets:
+                if 
+
+    if len(excludes) > 0:
+        exclude_subnets = aggregate_subnets(excludes)
+
+
     print(f"{delimiter.join(format_address(i, args.mask_type) for i in new_subnets)}")
 
     if args.notquiet:
