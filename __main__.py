@@ -6,7 +6,7 @@ import re
 NEWLINE = "\n"
 
 # Regexes
-SEPERATOR = r"[\s,;:]"
+SEPERATOR = r"[\s,;:\"')\]>]"
 END = r"(?=" + SEPERATOR + ")"
 
 # IPv4
