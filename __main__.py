@@ -94,35 +94,35 @@ def main() -> None:
     sorting_options.add_argument(
         "-S",
         "--sort",
-        help="Sort the output, ascending order",
+        help="Sort the output, ascending order.",
         action="store_true",
     )
 
     sorting_options.add_argument(
         "-R",
         "--reverse-sort",
-        help="Sort the output, decending order",
+        help="Sort the output, decending order.",
         action="store_true",
     )
 
     parser.add_argument(
         "-A",
         "--no-aggregate",
-        help="Don't aggregate subnets. Just output valid networks and addresses",
+        help="Don't aggregate subnets. Just output valid networks and addresses.",
         action="store_true",
     )
 
     parser.add_argument(
         "-u",
         "--unique",
-        help="Remove duplicates from the output, Ignored it used without -A/--no-aggregate",
+        help="Remove duplicates from the output, ignored if used without -A/--no-aggregate.",
         action="store_true",
     )
 
     parser.add_argument(
         "-c",
         "--count",
-        help="Only output a count of the networks/IPs",
+        help="Only output the count of the networks/IPs.",
         action="store_true",
     )
 
@@ -230,9 +230,12 @@ def main() -> None:
         processed_subnets.sort(reverse=True)
 
     """Output addresses"""
-    print(
-        f"{delimiter.join(format_address(i, args.mask_type) for i in processed_subnets)}"
-    )
+    if args.count:
+        print(f"{len(processed_subnets)}")
+    else:
+        print(
+            f"{delimiter.join(format_address(i, args.mask_type) for i in processed_subnets)}"
+        )
 
     if args.notquiet:
         print(RULE + NEWLINE + f"{len(processed_subnets)} subnets total")
