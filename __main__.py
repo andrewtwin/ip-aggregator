@@ -13,7 +13,9 @@ END = r"(?=" + SEPERATOR + ")"
 # IP4_OCTET = r"(?:2[0-5]{,2}|1[0-9]{,2}|[0-9])" # Can be fooled into getting partial but valid addresses
 IP4_OCTET = r"(?:[\d]{1,3})"
 IP4_DOT = r"\."
-IP4_MASK = r"(?:\/[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|\/3[0-2]|\/[1-2][\d]|\/[\d])?"
+IP4_MASK = (
+    r"(?:\/[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|\/3[0-2]|\/[1-2][\d]|\/[\d])?"
+)
 IP4_REGEX = re.compile(
     IP4_OCTET
     + IP4_DOT
@@ -23,7 +25,8 @@ IP4_REGEX = re.compile(
     + IP4_DOT
     + IP4_OCTET
     + IP4_MASK
-    + END, re.ASCII
+    + END,
+    re.ASCII,
 )
 
 
@@ -58,7 +61,7 @@ def main() -> None:
         help="Sets the output delimeter, default is new line.",
         default="\n",
     )
-    
+
     parser.add_argument(
         "-f",
         "--include-filter",
@@ -128,7 +131,9 @@ def main() -> None:
             try:
                 includes.append(ipaddress.ip_network(address))
             except ValueError:
-                exit(f"Supplied argument include {address} is not a valid IPv4 or IPv6 network.")
+                exit(
+                    f"Supplied argument include {address} is not a valid IPv4 or IPv6 network."
+                )
 
     """Populate excludes list"""
     if args.exclude_filter is not None:
@@ -136,7 +141,9 @@ def main() -> None:
             try:
                 excludes.append(ipaddress.ip_network(address))
             except ValueError:
-                exit(f"Supplied argument exclude {address} is not a valid IPv4 or IPv6 network.")
+                exit(
+                    f"Supplied argument exclude {address} is not a valid IPv4 or IPv6 network."
+                )
 
     if args.notquiet:
         print(
@@ -145,7 +152,8 @@ def main() -> None:
             + "=" * 18
         )
 
-    """Process subnets"""
+    """Start processing subnets"""
+
     if args.no_aggregate:
         if args.notquiet:
             print("Not aggregating subnets as requested.", file=sys.stderr)
@@ -155,21 +163,35 @@ def main() -> None:
 
     processed_subnets = []
 
-     """Process Includes and Excludes"""
+    """Process Includes and Excludes"""
     if len(includes) > 0:
+        included_subnets = []
         include_subnets = aggregate_subnets(includes)
-        for subnet in new_subnets:
-            for include in include_subnets:
-                if 
+        for include in include_subnets:
+            for subnet in new_subnets:
+                if subnet.subnet_of(include):
+                    included_subnets.append(subnet)
+    else:
+        included_subnets = new_subnets
 
     if len(excludes) > 0:
         exclude_subnets = aggregate_subnets(excludes)
+        for subnet in included_subnets:
+            exclude_subnet = False
+            for exclude in exclude_subnets:
+                if subnet.subnet_of(exclude):
+                    exclude_subnet = True
+            if not exclude_subnet:
+                processed_subnets.append(subnet)
+    else:
+        processed_subnets = included_subnets
 
-
-    print(f"{delimiter.join(format_address(i, args.mask_type) for i in new_subnets)}")
+    print(
+        f"{delimiter.join(format_address(i, args.mask_type) for i in processed_subnets)}"
+    )
 
     if args.notquiet:
-        print("=" * 18 + NEWLINE + f"{len(new_subnets)} subnets total")
+        print("=" * 18 + NEWLINE + f"{len(processed_subnets)} subnets total")
 
 
 def aggregate_subnets(subnets) -> list:
