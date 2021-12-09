@@ -5,24 +5,28 @@ Does the opposite of [ip-deaggregator](https://github.com/andrewtwin/ip-deaggreg
 
 ## Usage
 ```
-usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-m {prefix,net,wildcard}] [-A] [subnet ...]
+usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-f INCLUDE_FILTER] [-F EXCLUDE_FILTER] [-m {prefix,net,wildcard}] [-A] [subnet ...]
 
-Aggregate subnets.
+Gather and aggregate subnets.
 
 positional arguments:
   subnet                Subnets to aggregate.
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -s, --stdin           Read addresses from stdin (only IPv4 addresses supported).
   -q, --quiet           Only produce output, no other information.
   -d OUTPUT_DELIMITER, --output-delimiter OUTPUT_DELIMITER
                         Sets the output delimeter, default is new line.
+  -f INCLUDE_FILTER, --include-filter INCLUDE_FILTER
+                        Filter results to include subnets of a network. Multiple filters can be specified.
+  -F EXCLUDE_FILTER, --exclude-filter EXCLUDE_FILTER
+                        Filter results to exclude subnets of a network. Multiple filters can be specified.
   -m {prefix,net,wildcard}, --mask-type {prefix,net,wildcard}
                         Use prefix length (default), net mask, or wildcard mask.
   -A, --no-aggregate    Don't aggregate subnets. Just output valid networks and addresses
 
-ip-aggregator v0.2.1
+ip-aggregator v0.3.0
 ```
 ## Installation
 Download the python zipapp from the [releases](https://github.com/andrewtwin/ip-aggregator/releases) page.
