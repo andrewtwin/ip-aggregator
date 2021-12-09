@@ -6,7 +6,7 @@ import re
 NEWLINE = "\n"
 
 # Regexes
-SEPERATOR = r"[\s,;:\"')\]>]"
+SEPERATOR = r"[\s,;:\"')\]>a-zA-Z]"
 END = r"(?=" + SEPERATOR + ")"
 
 # IPv4
@@ -61,9 +61,17 @@ def main() -> None:
     
     parser.add_argument(
         "-f",
-        "--filter",
+        "--include-filter",
         type=str,
-        help="Filter results to subnets of a network. Multiple filters can be specified.",
+        help="Filter results to include subnets of a network. Multiple filters can be specified.",
+        nargs="+",
+    )
+
+     parser.add_argument(
+        "-F",
+        "--exclude-filter",
+        type=str,
+        help="Filter results to exclude subnets of a network. Multiple filters can be specified.",
         nargs="+",
     )
 
