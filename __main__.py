@@ -58,6 +58,14 @@ def main() -> None:
         help="Sets the output delimeter, default is new line.",
         default="\n",
     )
+    
+    parser.add_argument(
+        "-f",
+        "--filter",
+        type=str,
+        help="Filter results to subnets of a network. Multiple filters can be specified.",
+        nargs="+",
+    )
 
     parser.add_argument(
         "-m",
