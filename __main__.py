@@ -3,13 +3,15 @@ import argparse
 import sys
 import re
 
+"""Formatting"""
 NEWLINE = "\n"
+RULE = "=" * 18
 
-# Regexes
+"""Regex Definitions"""
 SEPERATOR = r"[\D]"
 END = r"(?=" + SEPERATOR + ")"
 
-# IPv4
+"""IPV4"""
 # IP4_OCTET = r"(?:2[0-5]{,2}|1[0-9]{,2}|[0-9])" # Can be fooled into getting partial but valid addresses
 IP4_OCTET = r"(?:[\d]{1,3})"
 IP4_DOT = r"\."
@@ -147,16 +149,19 @@ def main() -> None:
 
     if args.notquiet:
         print(
-            f"Input {len(subnets)} addresses: {delimiter.join(format_address(i, args.mask_type) for i in subnets)}"
+            f"Input {len(subnets)} addresses: "
+            + f"{delimiter.join(format_address(i, args.mask_type) for i in subnets)}"
             + NEWLINE
-            + "=" * 18
+            + RULE
         )
 
     """Start processing subnets"""
-
     if args.no_aggregate:
         if args.notquiet:
-            print("Not aggregating subnets as requested.", file=sys.stderr)
+            print(
+                "Not aggregating subnets as requested." + NEWLINE + RULE,
+                file=sys.stderr,
+            )
         new_subnets = subnets
     else:
         new_subnets = aggregate_subnets(subnets)
@@ -186,19 +191,27 @@ def main() -> None:
     else:
         processed_subnets = included_subnets
 
+    """Output addresses"""
     print(
         f"{delimiter.join(format_address(i, args.mask_type) for i in processed_subnets)}"
     )
 
     if args.notquiet:
-        print("=" * 18 + NEWLINE + f"{len(processed_subnets)} subnets total")
-
+        print(RULE + NEWLINE + f"{len(processed_subnets)} subnets total")
 
 def aggregate_subnets(subnets) -> list:
+    """return a list
+    
+    aggregate subnets
+    """
     return list(ipaddress.collapse_addresses(subnets))
 
 
 def format_address(address, mask="prefix") -> str:
+    """return a string
+    
+    format the network
+    """
     if mask == "net":
         return address.with_netmask
     elif mask == "wildcard":
