@@ -169,12 +169,15 @@ def main() -> None:
     """Populate includes list"""
     if args.include_filter is not None:
         for address in args.include_filter:
-            try:
-                includes.append(ipaddress.ip_network(address))
-            except ValueError:
-                exit(
-                    f"Supplied argument include {address} is not a valid IPv4 or IPv6 network."
-                )
+            if address in IP_CLASSES.keys():
+                includes.append(ipaddress.ip_network(IP_CLASSES.get(address)))
+            else:
+                try:
+                    includes.append(ipaddress.ip_network(address))
+                except ValueError:
+                    exit(
+                        f"Supplied argument include {address} is not a valid IPv4 or IPv6 network."
+                    )
 
     """Populate excludes list"""
     if args.exclude_filter is not None:
