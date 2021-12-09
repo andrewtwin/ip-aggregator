@@ -22,7 +22,7 @@ optional arguments:
                         Use prefix length (default), net mask, or wildcard mask.
   -A, --no-aggregate    Don't aggregate subnets. Just output valid networks and addresses
 
-ip-aggregator v0.2.1
+ip-aggregator v0.3.0
 ```
 ## Installation
 Download the python zipapp from the [releases](https://github.com/andrewtwin/ip-aggregator/releases) page.
