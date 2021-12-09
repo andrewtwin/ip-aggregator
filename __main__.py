@@ -35,8 +35,8 @@ IP4_REGEX = re.compile(
 def main() -> None:
 
     parser = argparse.ArgumentParser(
-        description="Gather and aggregate subnets.",
-        epilog="ip-aggregator v0.3.0",
+        description="Gather, filter, sort, and aggregate subnets.",
+        epilog="ip-aggregator v0.4.0",
     )
 
     parser.add_argument("subnet", type=str, help="Subnets to aggregate.", nargs="*")
@@ -44,7 +44,7 @@ def main() -> None:
     parser.add_argument(
         "-s",
         "--stdin",
-        help="Read addresses from stdin (only IPv4 addresses supported).",
+        help="Extract addresses from stdin (only IPv4 addresses supported).",
         action="store_true",
     )
 
@@ -89,10 +89,40 @@ def main() -> None:
         default="prefix",
     )
 
+    sorting_options = parser.add_mutually_exclusive_group()
+
+    sorting_options.add_argument(
+        "-S",
+        "--sort",
+        help="Sort the output, ascending order.",
+        action="store_true",
+    )
+
+    sorting_options.add_argument(
+        "-R",
+        "--reverse-sort",
+        help="Sort the output, decending order.",
+        action="store_true",
+    )
+
     parser.add_argument(
         "-A",
         "--no-aggregate",
-        help="Don't aggregate subnets. Just output valid networks and addresses",
+        help="Don't aggregate subnets. Just output valid networks and addresses.",
+        action="store_true",
+    )
+
+    parser.add_argument(
+        "-u",
+        "--unique",
+        help="Remove duplicates from the output, ignored if used without -A/--no-aggregate.",
+        action="store_true",
+    )
+
+    parser.add_argument(
+        "-c",
+        "--count",
+        help="Only output the count of the networks/IPs.",
         action="store_true",
     )
 
@@ -162,7 +192,13 @@ def main() -> None:
                 "Not aggregating subnets as requested." + NEWLINE + RULE,
                 file=sys.stderr,
             )
-        new_subnets = subnets
+        if args.unique:
+            new_subnets = []
+            for subnet in subnets:
+                if subnet not in new_subnets:
+                    new_subnets.append(subnet)
+        else:
+            new_subnets = subnets
     else:
         new_subnets = aggregate_subnets(subnets)
 
@@ -191,17 +227,26 @@ def main() -> None:
     else:
         processed_subnets = included_subnets
 
+    if args.sort:
+        processed_subnets.sort()
+    elif args.reverse_sort:
+        processed_subnets.sort(reverse=True)
+
     """Output addresses"""
-    print(
-        f"{delimiter.join(format_address(i, args.mask_type) for i in processed_subnets)}"
-    )
+    if args.count:
+        print(f"{len(processed_subnets)}")
+    else:
+        print(
+            f"{delimiter.join(format_address(i, args.mask_type) for i in processed_subnets)}"
+        )
 
     if args.notquiet:
         print(RULE + NEWLINE + f"{len(processed_subnets)} subnets total")
 
+
 def aggregate_subnets(subnets) -> list:
     """return a list
-    
+
     aggregate subnets
     """
     return list(ipaddress.collapse_addresses(subnets))
@@ -209,7 +254,7 @@ def aggregate_subnets(subnets) -> list:
 
 def format_address(address, mask="prefix") -> str:
     """return a string
-    
+
     format the network
     """
     if mask == "net":
