@@ -14,7 +14,7 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -s, --stdin           Try to match addresses from stdin (only IPv4 addresses supported).
+  -s, --stdin           Extract addresses from stdin (only IPv4 addresses supported).
   -q, --quiet           Only produce output, no other information.
   -d OUTPUT_DELIMITER, --output-delimiter OUTPUT_DELIMITER
                         Sets the output delimeter, default is new line.
@@ -30,7 +30,7 @@ optional arguments:
   -u, --unique          Remove duplicates from the output, ignored if used without -A/--no-aggregate.
   -c, --count           Only output the count of the networks/IPs.
 
-ip-aggregator v0.4.0 
+ip-aggregator v0.4.0
 ```
 ## Installation
 Download the python zipapp from the [releases](https://github.com/andrewtwin/ip-aggregator/releases) page.
