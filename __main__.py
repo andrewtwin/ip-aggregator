@@ -193,7 +193,10 @@ def main() -> None:
                 file=sys.stderr,
             )
         if args.unique:
-            new_subnets = list(set(subnets))
+            new_subnets = []
+            for subnet in subnets:
+                if subnet not in new_subnets:
+                    new_subnets.append(subnet)
         else:
             new_subnets = subnets
     else:
