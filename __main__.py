@@ -97,7 +97,10 @@ def main() -> None:
     delimiter = args.output_delimiter
 
     subnets = []
+    includes = []
+    excludes = []
 
+    """Populate subnets to process"""
     if args.stdin:
         for line in sys.stdin:
             read_subnets = re.findall(IP4_REGEX, line)
@@ -116,8 +119,25 @@ def main() -> None:
         except ValueError:
             exit(f"Supplied argument {subnet} is not a valid IPv4 or IPv6 network.")
 
+    """If there are no subnets to operate on exit with an error"""
     if len(subnets) < 1:
         exit("No subnets found to aggregate")
+
+    """Populate includes list"""
+    if args.include_filter is not None:
+        for address is args.include_filter:
+            try:
+            includes.append(ipaddress.ip_network(address))
+        except ValueError:
+            exit(f"Supplied argument include {address} is not a valid IPv4 or IPv6 network.")
+
+    """Populate excludes list"""
+    if args.exclude_filter is not None:
+        for address is args.exclude_filter:
+            try:
+            excludes.append(ipaddress.ip_network(address))
+        except ValueError:
+            exit(f"Supplied argument exclude {address} is not a valid IPv4 or IPv6 network.")
 
     if args.notquiet:
         print(
