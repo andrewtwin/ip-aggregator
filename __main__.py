@@ -35,8 +35,8 @@ IP4_REGEX = re.compile(
 def main() -> None:
 
     parser = argparse.ArgumentParser(
-        description="Gather and aggregate subnets.",
-        epilog="ip-aggregator v0.3.0",
+        description="Gather, filter, sort, and aggregate subnets.",
+        epilog="ip-aggregator v0.4.0",
     )
 
     parser.add_argument("subnet", type=str, help="Subnets to aggregate.", nargs="*")
