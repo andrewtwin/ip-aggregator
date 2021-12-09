@@ -68,7 +68,7 @@ def main() -> None:
         nargs="+",
     )
 
-     parser.add_argument(
+    parser.add_argument(
         "-F",
         "--exclude-filter",
         type=str,
