@@ -14,7 +14,7 @@ END = r"(?=" + SEPERATOR + ")"
 IP4_OCTET = r"(?:[0-9]{1,3})"
 IP4_DOT = r"\."
 IP4_MASK = r"(?:\/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|\/3[0-2]|\/[1-2][0-9]|\/[0-9])?"
-IP4_REGEX = (
+IP4_REGEX = re.compile(
     IP4_OCTET
     + IP4_DOT
     + IP4_OCTET
