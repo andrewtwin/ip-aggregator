@@ -127,17 +127,17 @@ def main() -> None:
     if args.include_filter is not None:
         for address in args.include_filter:
             try:
-            includes.append(ipaddress.ip_network(address))
-        except ValueError:
-            exit(f"Supplied argument include {address} is not a valid IPv4 or IPv6 network.")
+                includes.append(ipaddress.ip_network(address))
+            except ValueError:
+                exit(f"Supplied argument include {address} is not a valid IPv4 or IPv6 network.")
 
     """Populate excludes list"""
     if args.exclude_filter is not None:
         for address in args.exclude_filter:
             try:
-            excludes.append(ipaddress.ip_network(address))
-        except ValueError:
-            exit(f"Supplied argument exclude {address} is not a valid IPv4 or IPv6 network.")
+                excludes.append(ipaddress.ip_network(address))
+            except ValueError:
+                exit(f"Supplied argument exclude {address} is not a valid IPv4 or IPv6 network.")
 
     if args.notquiet:
         print(
