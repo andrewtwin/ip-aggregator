@@ -65,7 +65,7 @@ def main() -> None:
         "--include-filter",
         type=str,
         help="Filter results to include subnets of a network. Multiple filters can be specified.",
-        nargs="+",
+        action="append",
     )
 
     parser.add_argument(
@@ -73,7 +73,7 @@ def main() -> None:
         "--exclude-filter",
         type=str,
         help="Filter results to exclude subnets of a network. Multiple filters can be specified.",
-        nargs="+",
+        action="append",
     )
 
     parser.add_argument(
