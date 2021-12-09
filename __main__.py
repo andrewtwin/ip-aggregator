@@ -125,7 +125,7 @@ def main() -> None:
 
     """Populate includes list"""
     if args.include_filter is not None:
-        for address is args.include_filter:
+        for address in args.include_filter:
             try:
             includes.append(ipaddress.ip_network(address))
         except ValueError:
@@ -133,7 +133,7 @@ def main() -> None:
 
     """Populate excludes list"""
     if args.exclude_filter is not None:
-        for address is args.exclude_filter:
+        for address in args.exclude_filter:
             try:
             excludes.append(ipaddress.ip_network(address))
         except ValueError:
@@ -146,6 +146,7 @@ def main() -> None:
             + "=" * 18
         )
 
+    """Process subnets"""
     if args.no_aggregate:
         if args.notquiet:
             print("Not aggregating subnets as requested.", file=sys.stderr)
