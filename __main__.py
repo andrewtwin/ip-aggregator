@@ -44,7 +44,7 @@ def main() -> None:
     parser.add_argument(
         "-s",
         "--stdin",
-        help="Read addresses from stdin (only IPv4 addresses supported).",
+        help="Extract addresses from stdin (only IPv4 addresses supported).",
         action="store_true",
     )
 
