@@ -1,18 +1,18 @@
 # ip-aggregator
-Aggregate IPs from arguments, stdin, or both. Useful for making route and filter tables smaller.
+Gather, filter, sort, and aggregate IPs from arguments, stdin, or both. Useful for making route and filter tables smaller.
 
 Does the opposite of [ip-deaggregator](https://github.com/andrewtwin/ip-deaggregator)
 
 ## Usage
 ```
-usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-f INCLUDE_FILTER] [-F EXCLUDE_FILTER] [-m {prefix,net,wildcard}] [-A] [subnet ...]
+usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-f INCLUDE_FILTER] [-F EXCLUDE_FILTER] [-m {prefix,net,wildcard}] [-S | -R] [-A] [-u] [-c] [subnet ...]
 
-Gather and aggregate subnets.
+Gather, filter, sort, and aggregate subnets.
 
 positional arguments:
   subnet                Subnets to aggregate.
 
-options:
+optional arguments:
   -h, --help            show this help message and exit
   -s, --stdin           Read addresses from stdin (only IPv4 addresses supported).
   -q, --quiet           Only produce output, no other information.
@@ -24,9 +24,13 @@ options:
                         Filter results to exclude subnets of a network. Multiple filters can be specified.
   -m {prefix,net,wildcard}, --mask-type {prefix,net,wildcard}
                         Use prefix length (default), net mask, or wildcard mask.
-  -A, --no-aggregate    Don't aggregate subnets. Just output valid networks and addresses
+  -S, --sort            Sort the output, ascending order.
+  -R, --reverse-sort    Sort the output, decending order.
+  -A, --no-aggregate    Don't aggregate subnets. Just output valid networks and addresses.
+  -u, --unique          Remove duplicates from the output, ignored if used without -A/--no-aggregate.
+  -c, --count           Only output the count of the networks/IPs.
 
-ip-aggregator v0.3.0
+ip-aggregator v0.4.0
 ```
 ## Installation
 Download the python zipapp from the [releases](https://github.com/andrewtwin/ip-aggregator/releases) page.
