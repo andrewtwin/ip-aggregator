@@ -6,7 +6,6 @@ import re
 NEWLINE = "\n"
 
 # Regexes
-#SEPERATOR = r"[\s,;:\"')\]>a-zA-Z]"
 SEPERATOR = r"[\D]"
 END = r"(?=" + SEPERATOR + ")"
 
