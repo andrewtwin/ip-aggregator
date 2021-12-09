@@ -6,14 +6,15 @@ import re
 NEWLINE = "\n"
 
 # Regexes
-SEPERATOR = r"[\s,;:\"')\]>a-zA-Z]"
+#SEPERATOR = r"[\s,;:\"')\]>a-zA-Z]"
+SEPERATOR = r"[\D]"
 END = r"(?=" + SEPERATOR + ")"
 
 # IPv4
-# IP4_OCTET = r"(?:2[0-5]{,2}|1[0-9]{,2}|[0-9])" #Can be fooled into getting partial but valid addresses
-IP4_OCTET = r"(?:[0-9]{1,3})"
+# IP4_OCTET = r"(?:2[0-5]{,2}|1[0-9]{,2}|[0-9])" # Can be fooled into getting partial but valid addresses
+IP4_OCTET = r"(?:[\d]{1,3})"
 IP4_DOT = r"\."
-IP4_MASK = r"(?:\/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|\/3[0-2]|\/[1-2][0-9]|\/[0-9])?"
+IP4_MASK = r"(?:\/[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|\/3[0-2]|\/[1-2][\d]|\/[\d])?"
 IP4_REGEX = re.compile(
     IP4_OCTET
     + IP4_DOT
@@ -23,7 +24,7 @@ IP4_REGEX = re.compile(
     + IP4_DOT
     + IP4_OCTET
     + IP4_MASK
-    + END
+    + END, re.ASCII
 )
 
 
