@@ -77,8 +77,8 @@ def main() -> None:
         prog="ip-aggregator",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description="""Extract, filter, sort, and aggregate subnets.
-Copyright (C) 2021 Andrew Twin""",
-        epilog=f"{VERSION}" + LICENCE,
+Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""",
+        epilog=f"{VERSION}",
     )
 
     parser.add_argument("subnet", type=str, help="Subnets to aggregate.", nargs="*")
@@ -203,7 +203,6 @@ Copyright (C) 2021 Andrew Twin""",
         exit(0)
 
     delimiter = args.output_delimiter
-
 
     """Populate subnets to process"""
     subnets = []
