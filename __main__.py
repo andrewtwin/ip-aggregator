@@ -186,10 +186,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/
 
     """If just listing the classes, print and exit"""
     if args.list_classes:
-        print("Recognised address class aliases: ")
+        print(
+            "Recognised address class aliases."
+            + NEWLINE
+            + "These can be used alongside regular addresses in filters:"
+            + NEWLINE
+            + RULE * 2,
+        )
         for ipclass, ipvalue in IP4_CLASSES.items():
             print(f"{ipclass}\t{format_address(ipvalue, args.mask_type)}")
-        exit()
+        exit(0)
 
     delimiter = args.output_delimiter
 
