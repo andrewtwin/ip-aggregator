@@ -54,6 +54,7 @@ IP4_REGEX = re.compile(
     re.ASCII,
 )
 
+"""IP Constants"""
 IP4_CLASSES = {
     "A": ipaddress.ip_network("10.0.0.0/8"),
     "B": ipaddress.ip_network("172.16.0.0/12"),
@@ -67,6 +68,10 @@ IP4_CLASSES = {
 
 
 def main() -> None:
+    """no return
+
+    Main function.
+    """
 
     parser = argparse.ArgumentParser(
         prog="ip-aggregator",
