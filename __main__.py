@@ -33,6 +33,9 @@ RULE = "=" * 18
 
 """Regex Definitions"""
 SEPERATOR = r"[\D]"
+RANGE_SEPERATOR = r"[-]?"
+CAPTURE_START = r"("
+CAPTURE_END = r")"
 END = r"(?=" + SEPERATOR + ")"
 
 """IPV4"""
@@ -52,6 +55,19 @@ IP4_REGEX = re.compile(
     + IP4_OCTET
     + IP4_MASK
     + END,
+    re.ASCII,
+)
+IP4_RANGE_REGEX = re.compile(
+    CAPTURE_START
+    + IP4_OCTET
+    + IP4_DOT
+    + IP4_OCTET
+    + IP4_DOT
+    + IP4_OCTET
+    + IP4_DOT
+    + IP4_OCTET
+    + CAPTURE_END
+    + RANGE_SEPERATOR,
     re.ASCII,
 )
 
@@ -219,11 +235,23 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
                         file=sys.stderr,
                     )
 
+    """Check for IP range otherwise assume subnet"""
     for subnet in args.subnet:
-        try:
-            subnets.append(ipaddress.ip_network(subnet))
-        except ValueError:
-            exit(f"Supplied argument {subnet} is not a valid IPv4 or IPv6 network.")
+        subnet_range_list = re.findall(IP4_RANGE_REGEX, subnet)
+        if len(subnet_range_list) == 2:
+            try:
+                subnet_range = ipaddress.summarize_address_range(
+                   ipaddress.ip_address(subnet_range_list[0]),
+                   ipaddress.ip_address(subnet_range_list[1])
+                )
+                subnets.extend(subnet_range)
+            except ValueError:
+                exit(f"Supplied argument {subnet} are not a valid IPv4 or IPv6 addresses.")
+        else:
+            try:
+                subnets.append(ipaddress.ip_network(subnet))
+            except ValueError:
+                exit(f"Supplied argument {subnet} is not a valid IPv4 or IPv6 network.")
 
     """If there are no subnets to operate on exit with an error"""
     if len(subnets) < 1:
