@@ -5,8 +5,9 @@ Does the opposite of [ip-deaggregator](https://github.com/andrewtwin/ip-deaggreg
 
 ## Usage
 ```
-usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-l] [-f INCLUDE_FILTER] [-F EXCLUDE_FILTER]
-[-m {prefix,net,wildcard}] [-S | -R] [-A] [-u] [-c] [-V] [subnet ...]
+usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-l] [-f INCLUDE_FILTER]
+                     [-F EXCLUDE_FILTER] [-m {prefix,net,wildcard}] [-S | -R] [-A] [-u] [-c] [-V]
+                     [subnet ...]
 
 Extract, filter, sort, and aggregate subnets.
 Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.
@@ -20,17 +21,21 @@ optional arguments:
   -q, --quiet           Only produce output, no other information.
   -d OUTPUT_DELIMITER, --output-delimiter OUTPUT_DELIMITER
                         Sets the output delimeter, default is a new line.
-  -l, --list-classes    List IP classes and exit. Classes can be used in filters, supports -m/--mask-type flag.
+  -l, --list-classes    List IP classes and exit. Classes can be used in filters, supports
+                        -m/--mask-type flag.
   -f INCLUDE_FILTER, --include-filter INCLUDE_FILTER
-                        Filter results to include subnets of a network. Multiple filters can be specified.
+                        Filter results to include subnets of a network. Multiple filters can be
+                        specified.
   -F EXCLUDE_FILTER, --exclude-filter EXCLUDE_FILTER
-                        Filter results to exclude subnets of a network. Multiple filters can be specified.
+                        Filter results to exclude subnets of a network. Multiple filters can be
+                        specified.
   -m {prefix,net,wildcard}, --mask-type {prefix,net,wildcard}
                         Use prefix length (default), net mask, or wildcard mask.
   -S, --sort            Sort the output, ascending order.
   -R, --reverse-sort    Sort the output, decending order.
   -A, --no-aggregate    Don't aggregate subnets. Just output valid networks and addresses.
-  -u, --unique          Remove duplicates from the output, ignored if used without -A/--no-aggregate.
+  -u, --unique          Remove duplicates from the output, ignored if used without -A/--no-
+                        aggregate.
   -c, --count           Only output the count of the networks/IPs.
   -V, --version         Print version and licence information and exit
 
@@ -157,6 +162,44 @@ Input 5 addresses: 10.0.0.1/32
 192.168.0.2/32
 ==================
 5 subnets total
+```
+
+Extract IPs from stdin, filter for class A addresses and a class C network, exclude a class A network, skip aggregating subnets and sort the output.
+```
+echo "10.0.0.1, 192.168.0.2, 172.16.0.1, 10.0.0.2, 192.168.0.1,127.0.0.1;10.100.20.0/24 10.100.30.0/24 (10.100.40.0/24)[192.168.20.128/25,10.0.0.5];10.0.0.3;10.0.0.20;10.50.1.1;10.90.0.0/16;10.23.20.1;10.32.6.2" | ip-aggregator -s -A -f A -f 192.168.0.0/24 -F 10.100.0.0/16 -S
+Input 17 addresses: 10.0.0.1/32
+192.168.0.2/32
+172.16.0.1/32
+10.0.0.2/32
+192.168.0.1/32
+127.0.0.1/32
+10.100.20.0/24
+10.100.30.0/24
+10.100.40.0/24
+192.168.20.128/25
+10.0.0.5/32
+10.0.0.3/32
+10.0.0.20/32
+10.50.1.1/32
+10.90.0.0/16
+10.23.20.1/32
+10.32.6.2/32
+==================
+Not aggregating subnets as requested.
+==================
+10.0.0.1/32
+10.0.0.2/32
+10.0.0.3/32
+10.0.0.5/32
+10.0.0.20/32
+10.23.20.1/32
+10.32.6.2/32
+10.50.1.1/32
+10.90.0.0/16
+192.168.0.1/32
+192.168.0.2/32
+==================
+11 subnets total
 ```
 
 And more!
