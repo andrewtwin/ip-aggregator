@@ -5,9 +5,11 @@ Does the opposite of [ip-deaggregator](https://github.com/andrewtwin/ip-deaggreg
 
 ## Usage
 ```
-usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-f INCLUDE_FILTER] [-F EXCLUDE_FILTER] [-m {prefix,net,wildcard}] [-S | -R] [-A] [-u] [-c] [subnet ...]
+usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-l] [-f INCLUDE_FILTER] [-F EXCLUDE_FILTER]
+[-m {prefix,net,wildcard}] [-S | -R] [-A] [-u] [-c] [-V] [subnet ...]
 
-Gather, filter, sort, and aggregate subnets.
+Extract, filter, sort, and aggregate subnets.
+Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.
 
 positional arguments:
   subnet                Subnets to aggregate.
@@ -17,7 +19,8 @@ optional arguments:
   -s, --stdin           Extract addresses from stdin (only IPv4 addresses supported).
   -q, --quiet           Only produce output, no other information.
   -d OUTPUT_DELIMITER, --output-delimiter OUTPUT_DELIMITER
-                        Sets the output delimeter, default is new line.
+                        Sets the output delimeter, default is a new line.
+  -l, --list-classes    List IP classes and exit. Classes can be used in filters, supports -m/--mask-type flag.
   -f INCLUDE_FILTER, --include-filter INCLUDE_FILTER
                         Filter results to include subnets of a network. Multiple filters can be specified.
   -F EXCLUDE_FILTER, --exclude-filter EXCLUDE_FILTER
@@ -29,8 +32,9 @@ optional arguments:
   -A, --no-aggregate    Don't aggregate subnets. Just output valid networks and addresses.
   -u, --unique          Remove duplicates from the output, ignored if used without -A/--no-aggregate.
   -c, --count           Only output the count of the networks/IPs.
+  -V, --version         Print version and licence information and exit
 
-ip-aggregator v0.4.0
+v0.5.0
 ```
 ## Installation
 Download the python zipapp from the [releases](https://github.com/andrewtwin/ip-aggregator/releases) page.
@@ -81,3 +85,78 @@ echo '192.168.0.0/24,192.168.2.0/24' | ip-aggregator -s 192.168.1.0/24 192.168.3
 192.168.0.0/22
 ```
 
+Extract subnets and addresses from text:
+```
+echo "These are IPs 10.0.0.1 10.0.0.2, 10.0.0.3 and a network 10.0.0.0/24" | ip-aggregator -s
+Input 4 addresses: 10.0.0.1/32
+10.0.0.2/32
+10.0.0.3/32
+10.0.0.0/24
+==================
+10.0.0.0/24
+==================
+1 subnets total
+```
+
+Don't aggrerate output, just extract and validate:
+```
+echo "These are IPs 10.0.0.1 10.0.0.2, 10.0.0.3 and a network 10.0.0.0/24" | ip-aggregator -s -A
+Input 4 addresses: 10.0.0.1/32
+10.0.0.2/32
+10.0.0.3/32
+10.0.0.0/24
+==================
+Not aggregating subnets as requested.
+==================
+10.0.0.1/32
+10.0.0.2/32
+10.0.0.3/32
+10.0.0.0/24
+==================
+4 subnets total
+```
+
+Apply filters to include subnets of a network:
+```
+echo "10.0.0.1, 172.16.0.1, 192.168.0.1" | ip-aggregator -s -f 10.0.0.0/8
+Input 3 addresses: 10.0.0.1/32
+172.16.0.1/32
+192.168.0.1/32
+==================
+10.0.0.1/32
+==================
+1 subnets total
+```
+
+Or apply filters to exlcude subnets:
+```
+echo "10.0.0.1, 172.16.0.1, 192.168.0.1" | ip-aggregator -s -F 10.0.0.0/8
+Input 3 addresses: 10.0.0.1/32
+172.16.0.1/32
+192.168.0.1/32
+==================
+172.16.0.1/32
+192.168.0.1/32
+==================
+2 subnets total
+```
+
+Sort output:
+```
+echo "10.0.0.1, 192.168.0.2, 172.16.0.1, 10.0.0.2, 192.168.0.1" | ip-aggregator -s -S
+Input 5 addresses: 10.0.0.1/32
+192.168.0.2/32
+172.16.0.1/32
+10.0.0.2/32
+192.168.0.1/32
+==================
+10.0.0.1/32
+10.0.0.2/32
+172.16.0.1/32
+192.168.0.1/32
+192.168.0.2/32
+==================
+5 subnets total
+```
+
+And more!

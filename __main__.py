@@ -1,9 +1,33 @@
+SYNOPSYS = """ip-aggregator - Extract, filter, sort, and aggregate IPs from subnets into larger supernets."""
+
+LICENCE = """
+Copyright (C) 2021 Andrew Twin
+
+https://github.com/andrewtwin/ip-aggregator
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+"""
+
+VERSION = "v0.5.0"
+
 import ipaddress
 import argparse
 import sys
 import re
 
-"""Formatting"""
+
+"""Formatting Constants"""
 NEWLINE = "\n"
 RULE = "=" * 18
 
@@ -31,12 +55,31 @@ IP4_REGEX = re.compile(
     re.ASCII,
 )
 
+"""IP Network Constants"""
+IP4_CLASSES = {
+    "A": ipaddress.ip_network("10.0.0.0/8"),
+    "B": ipaddress.ip_network("172.16.0.0/12"),
+    "C": ipaddress.ip_network("192.168.0.0/16"),
+    "D": ipaddress.ip_network("224.0.0.0/4"),
+    "E": ipaddress.ip_network("240.0.0.0/4"),
+    "N": ipaddress.ip_network("100.64.0.0/10"),
+    "L": ipaddress.ip_network("127.0.0.0/8"),
+    "U": ipaddress.ip_network("169.254.0.0/16"),
+}
+
 
 def main() -> None:
+    """no return
+
+    Main function.
+    """
 
     parser = argparse.ArgumentParser(
-        description="Gather, filter, sort, and aggregate subnets.",
-        epilog="ip-aggregator v0.4.0",
+        prog="ip-aggregator",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="""Extract, filter, sort, and aggregate subnets.
+Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""",
+        epilog=f"{VERSION}",
     )
 
     parser.add_argument("subnet", type=str, help="Subnets to aggregate.", nargs="*")
@@ -60,8 +103,15 @@ def main() -> None:
         "-d",
         "--output-delimiter",
         type=str,
-        help="Sets the output delimeter, default is new line.",
+        help="Sets the output delimeter, default is a new line.",
         default="\n",
+    )
+
+    parser.add_argument(
+        "-l",
+        "--list-classes",
+        help="List IP classes and exit. Classes can be used in filters, supports -m/--mask-type flag.",
+        action="store_true",
     )
 
     parser.add_argument(
@@ -126,15 +176,37 @@ def main() -> None:
         action="store_true",
     )
 
+    parser.add_argument(
+        "-V",
+        "--version",
+        help="Print version and licence information and exit",
+        action="store_true",
+    )
+
     args = parser.parse_args()
+
+    """If displaying version and licence, print and exit"""
+    if args.version:
+        print(f"{VERSION}" + LICENCE)
+        exit(0)
+
+    """If just listing the classes, print and exit"""
+    if args.list_classes:
+        print(
+            "Recognised address class aliases."
+            + NEWLINE
+            + "These can be used alongside regular addresses in filters:"
+            + NEWLINE
+            + RULE * 2,
+        )
+        for ipclass, ipvalue in IP4_CLASSES.items():
+            print(f"{ipclass}\t{format_address(ipvalue, args.mask_type)}")
+        exit(0)
 
     delimiter = args.output_delimiter
 
-    subnets = []
-    includes = []
-    excludes = []
-
     """Populate subnets to process"""
+    subnets = []
     if args.stdin:
         for line in sys.stdin:
             read_subnets = re.findall(IP4_REGEX, line)
@@ -158,24 +230,32 @@ def main() -> None:
         exit("No subnets found to aggregate")
 
     """Populate includes list"""
+    includes = []
     if args.include_filter is not None:
         for address in args.include_filter:
-            try:
-                includes.append(ipaddress.ip_network(address))
-            except ValueError:
-                exit(
-                    f"Supplied argument include {address} is not a valid IPv4 or IPv6 network."
-                )
+            if address in IP4_CLASSES.keys():
+                includes.append(IP4_CLASSES.get(address))
+            else:
+                try:
+                    includes.append(ipaddress.ip_network(address))
+                except ValueError:
+                    exit(
+                        f"Supplied argument include {address} is not a valid IPv4 or IPv6 network."
+                    )
 
     """Populate excludes list"""
+    excludes = []
     if args.exclude_filter is not None:
         for address in args.exclude_filter:
-            try:
-                excludes.append(ipaddress.ip_network(address))
-            except ValueError:
-                exit(
-                    f"Supplied argument exclude {address} is not a valid IPv4 or IPv6 network."
-                )
+            if address in IP4_CLASSES.keys():
+                excludes.append(IP4_CLASSES.get(address))
+            else:
+                try:
+                    excludes.append(ipaddress.ip_network(address))
+                except ValueError:
+                    exit(
+                        f"Supplied argument exclude {address} is not a valid IPv4 or IPv6 network."
+                    )
 
     if args.notquiet:
         print(
@@ -192,6 +272,7 @@ def main() -> None:
                 "Not aggregating subnets as requested." + NEWLINE + RULE,
                 file=sys.stderr,
             )
+        """Remove duplciate subnets"""
         if args.unique:
             new_subnets = []
             for subnet in subnets:
@@ -227,6 +308,7 @@ def main() -> None:
     else:
         processed_subnets = included_subnets
 
+    """Do sorting if required"""
     if args.sort:
         processed_subnets.sort()
     elif args.reverse_sort:
