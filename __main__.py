@@ -1,4 +1,4 @@
-"""Extract, filter, sort, and aggregate IPs from subnets into larger supernets."""
+"""ip-aggregator - Extract, filter, sort, and aggregate IPs from subnets into larger supernets."""
 
 LICENCE = """
 Copyright (C) 2021 Andrew Twin
@@ -26,7 +26,7 @@ import sys
 import re
 
 
-"""Formatting"""
+"""Formatting Constants"""
 NEWLINE = "\n"
 RULE = "=" * 18
 
@@ -54,7 +54,7 @@ IP4_REGEX = re.compile(
     re.ASCII,
 )
 
-"""IP Constants"""
+"""IP Network Constants"""
 IP4_CLASSES = {
     "A": ipaddress.ip_network("10.0.0.0/8"),
     "B": ipaddress.ip_network("172.16.0.0/12"),
