@@ -258,6 +258,7 @@ def main() -> None:
     else:
         processed_subnets = included_subnets
 
+    """Do sorting is required"""
     if args.sort:
         processed_subnets.sort()
     elif args.reverse_sort:
