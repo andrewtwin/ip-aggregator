@@ -204,11 +204,9 @@ Copyright (C) 2021 Andrew Twin""",
 
     delimiter = args.output_delimiter
 
-    subnets = []
-    includes = []
-    excludes = []
 
     """Populate subnets to process"""
+    subnets = []
     if args.stdin:
         for line in sys.stdin:
             read_subnets = re.findall(IP4_REGEX, line)
@@ -233,6 +231,7 @@ Copyright (C) 2021 Andrew Twin""",
 
     """Populate includes list"""
     if args.include_filter is not None:
+        includes = []
         for address in args.include_filter:
             if address in IP4_CLASSES.keys():
                 includes.append(IP4_CLASSES.get(address))
@@ -246,6 +245,7 @@ Copyright (C) 2021 Andrew Twin""",
 
     """Populate excludes list"""
     if args.exclude_filter is not None:
+        excludes = []
         for address in args.exclude_filter:
             if address in IP4_CLASSES.keys():
                 excludes.append(IP4_CLASSES.get(address))
