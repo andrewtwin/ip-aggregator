@@ -1,4 +1,4 @@
-"""ip-aggregator - Extract, filter, sort, and aggregate IPs from subnets into larger supernets."""
+SYNOPSYS = """ip-aggregator - Extract, filter, sort, and aggregate IPs from subnets into larger supernets."""
 
 LICENCE = """
 Copyright (C) 2021 Andrew Twin
@@ -18,6 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+
 VERSION = "v0.5.0"
 
 import ipaddress
