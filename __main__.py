@@ -261,6 +261,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/
                 "Not aggregating subnets as requested." + NEWLINE + RULE,
                 file=sys.stderr,
             )
+        """Remove duplciate subnets"""
         if args.unique:
             new_subnets = []
             for subnet in subnets:
