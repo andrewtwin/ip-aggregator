@@ -164,10 +164,12 @@ Input 5 addresses: 10.0.0.1/32
 5 subnets total
 ```
 
-Extract IPs from stdin, filter for class A addresses and a class C network, exclude a class A network, skip aggregating subnets and sort the output.
+Extract IPs in different formats from stdin, filter for class A addresses and a class C network, exclude a class A network, skip aggregating subnets but remove duplicats, and sort the output.
 ```
-echo "10.0.0.1, 192.168.0.2, 172.16.0.1, 10.0.0.2, 192.168.0.1,127.0.0.1;10.100.20.0/24 10.100.30.0/24 (10.100.40.0/24)[192.168.20.128/25,10.0.0.5];10.0.0.3;10.0.0.20;10.50.1.1;10.90.0.0/16;10.23.20.1;10.32.6.2" | ip-aggregator -s -A -f A -f 192.168.0.0/24 -F 10.100.0.0/16 -S
-Input 17 addresses: 10.0.0.1/32
+echo "10.0.0.1/255.255.255.255, 10.0.0.1 192.168.0.2, 172.16.0.1, ip=10.0.0.2 ip=10.0.0.2/0.0.0.0, 192.168.0.1,127.0.0.1;10.100.20.0/255.255.255.0 10.100.30.0/0.0.0.255 (10.100.40.0/24)[192.168.20.128/25,10.0.0.5];10.0.0.3;10.0.0.20;10.50.1.1;10.90.0.0/16;10.23.20.1;10.32.6.2" | ip-aggregator -s -A -u -f A -f 192.168.0.0/255.255.255.0 -F 10.100.0.0/16 -S
+WARNING: Address 10.0.0.2/0.0.0.0 from stdin is not a valid IPv4 address or network, ignoring
+Input 18 addresses: 10.0.0.1/32
+10.0.0.1/32
 192.168.0.2/32
 172.16.0.1/32
 10.0.0.2/32
