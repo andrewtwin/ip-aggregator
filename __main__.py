@@ -1,3 +1,23 @@
+"""
+Extract, filter, sort, and aggregate IPs from subnets into larger supernets.
+Copyright (C) 2021 Andrew Twin
+
+https://github.com/andrewtwin/ip-aggregator
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+
 import ipaddress
 import argparse
 import sys
@@ -31,7 +51,7 @@ IP4_REGEX = re.compile(
     re.ASCII,
 )
 
-IP_CLASSES = {
+IP4_CLASSES = {
     "A": ipaddress.ip_network("10.0.0.0/8"),
     "B": ipaddress.ip_network("172.16.0.0/12"),
     "C": ipaddress.ip_network("192.168.0.0/16"),
@@ -46,8 +66,26 @@ IP_CLASSES = {
 def main() -> None:
 
     parser = argparse.ArgumentParser(
-        description="Gather, filter, sort, and aggregate subnets.",
-        epilog="ip-aggregator v0.4.0",
+        prog="ip-aggregator",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="""Extract, filter, sort, and aggregate subnets.
+Copyright (C) 2021 Andrew Twin""",
+        epilog="""ip-aggregator v0.5.0
+https://github.com/andrewtwin/ip-aggregator
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/
+""",
     )
 
     parser.add_argument("subnet", type=str, help="Subnets to aggregate.", nargs="*")
@@ -146,10 +184,10 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    """If just listing the classes, print and exit""" 
+    """If just listing the classes, print and exit"""
     if args.list_classes:
-        print("Recognised address classes: ")
-        for ipclass, ipvalue in IP_CLASSES.items():
+        print("Recognised address class aliases: ")
+        for ipclass, ipvalue in IP4_CLASSES.items():
             print(f"{ipclass}\t{format_address(ipvalue, args.mask_type)}")
         exit()
 
@@ -185,8 +223,8 @@ def main() -> None:
     """Populate includes list"""
     if args.include_filter is not None:
         for address in args.include_filter:
-            if address in IP_CLASSES.keys():
-                includes.append(IP_CLASSES.get(address))
+            if address in IP4_CLASSES.keys():
+                includes.append(IP4_CLASSES.get(address))
             else:
                 try:
                     includes.append(ipaddress.ip_network(address))
@@ -198,8 +236,8 @@ def main() -> None:
     """Populate excludes list"""
     if args.exclude_filter is not None:
         for address in args.exclude_filter:
-            if address in IP_CLASSES.keys():
-                excludes.append(IP_CLASSES.get(address))
+            if address in IP4_CLASSES.keys():
+                excludes.append(IP4_CLASSES.get(address))
             else:
                 try:
                     excludes.append(ipaddress.ip_network(address))
