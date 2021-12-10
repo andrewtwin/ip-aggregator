@@ -230,8 +230,8 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         exit("No subnets found to aggregate")
 
     """Populate includes list"""
+    includes = []
     if args.include_filter is not None:
-        includes = []
         for address in args.include_filter:
             if address in IP4_CLASSES.keys():
                 includes.append(IP4_CLASSES.get(address))
@@ -244,8 +244,8 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
                     )
 
     """Populate excludes list"""
+    excludes = []
     if args.exclude_filter is not None:
-        excludes = []
         for address in args.exclude_filter:
             if address in IP4_CLASSES.keys():
                 excludes.append(IP4_CLASSES.get(address))
