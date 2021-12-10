@@ -35,10 +35,11 @@ IP_CLASSES = {
     "A": ipaddress.ip_network("10.0.0.0/8"),
     "B": ipaddress.ip_network("172.16.0.0/12"),
     "C": ipaddress.ip_network("192.168.0.0/16"),
+    "D": ipaddress.ip_network("224.0.0.0/4"),
+    "E": ipaddress.ip_network("240.0.0.0/4"),
     "N": ipaddress.ip_network("100.64.0.0/10"),
     "L": ipaddress.ip_network("127.0.0.0/8"),
-    "I": ipaddress.ip_network("169.254.0.0/16"),
-    "M": ipaddress.ip_network("224.0.0.0/4"),
+    "U": ipaddress.ip_network("169.254.0.0/16"),
 }
 
 
@@ -77,7 +78,7 @@ def main() -> None:
     parser.add_argument(
         "-l",
         "--list-classes",
-        help="List known IP classes that can be used in filters and exit.",
+        help="List IP classes and exit. Classes can be used in filters, supports -m/--mask-type flag.",
         action="store_true",
     )
 
