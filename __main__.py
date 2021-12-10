@@ -32,14 +32,15 @@ IP4_REGEX = re.compile(
 )
 
 IP_CLASSES = {
-    "A": "10.0.0.0/8",
-    "B": "172.168.0.0/12",
-    "C": "192.168.0.0/16",
-    "N": "100.64.0.0/10",
-    "L": "127.0.0.0/8",
-    "I": "169.254.0.0/16",
-    "M": "224.0.0.0/4",
+    "A": ipaddress.ip_network("10.0.0.0/8"),
+    "B": ipaddress.ip_network("172.16.0.0/12"),
+    "C": ipaddress.ip_network("192.168.0.0/16"),
+    "N": ipaddress.ip_network("100.64.0.0/10"),
+    "L": ipaddress.ip_network("127.0.0.0/8"),
+    "I": ipaddress.ip_network("169.254.0.0/16"),
+    "M": ipaddress.ip_network("224.0.0.0/4"),
 }
+
 
 def main() -> None:
 
@@ -71,6 +72,13 @@ def main() -> None:
         type=str,
         help="Sets the output delimeter, default is new line.",
         default="\n",
+    )
+
+    parser.add_argument(
+        "-l",
+        "--list-classes",
+        help="List known IP classes that can be used in filters and exit.",
+        action="store_true",
     )
 
     parser.add_argument(
@@ -137,6 +145,13 @@ def main() -> None:
 
     args = parser.parse_args()
 
+    """If just listing the classes, print and exit""" 
+    if args.list_classes:
+        print("Recognised address classes: ")
+        for ipclass, ipvalue in IP_CLASSES.items():
+            print(f"{ipclass}\t{format_address(ipvalue, args.mask_type)}")
+        exit()
+
     delimiter = args.output_delimiter
 
     subnets = []
@@ -170,7 +185,7 @@ def main() -> None:
     if args.include_filter is not None:
         for address in args.include_filter:
             if address in IP_CLASSES.keys():
-                includes.append(ipaddress.ip_network(IP_CLASSES.get(address)))
+                includes.append(IP_CLASSES.get(address))
             else:
                 try:
                     includes.append(ipaddress.ip_network(address))
@@ -182,12 +197,15 @@ def main() -> None:
     """Populate excludes list"""
     if args.exclude_filter is not None:
         for address in args.exclude_filter:
-            try:
-                excludes.append(ipaddress.ip_network(address))
-            except ValueError:
-                exit(
-                    f"Supplied argument exclude {address} is not a valid IPv4 or IPv6 network."
-                )
+            if address in IP_CLASSES.keys():
+                excludes.append(IP_CLASSES.get(address))
+            else:
+                try:
+                    excludes.append(ipaddress.ip_network(address))
+                except ValueError:
+                    exit(
+                        f"Supplied argument exclude {address} is not a valid IPv4 or IPv6 network."
+                    )
 
     if args.notquiet:
         print(
