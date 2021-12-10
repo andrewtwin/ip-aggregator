@@ -5,7 +5,8 @@ Does the opposite of [ip-deaggregator](https://github.com/andrewtwin/ip-deaggreg
 
 ## Usage
 ```
-usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-l] [-f INCLUDE_FILTER] [-F EXCLUDE_FILTER] [-m {prefix,net,wildcard}] [-S | -R] [-A] [-u] [-c] [subnet ...]
+usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-l] [-f INCLUDE_FILTER]
+[-F EXCLUDE_FILTER] [-m {prefix,net,wildcard}] [-S | -R] [-A] [-u] [-c] [subnet ...]
 
 Extract, filter, sort, and aggregate subnets.
 Copyright (C) 2021 Andrew Twin
@@ -18,7 +19,7 @@ optional arguments:
   -s, --stdin           Extract addresses from stdin (only IPv4 addresses supported).
   -q, --quiet           Only produce output, no other information.
   -d OUTPUT_DELIMITER, --output-delimiter OUTPUT_DELIMITER
-                        Sets the output delimeter, default is new line.
+                        Sets the output delimeter, default is a new line.
   -l, --list-classes    List IP classes and exit. Classes can be used in filters, supports -m/--mask-type flag.
   -f INCLUDE_FILTER, --include-filter INCLUDE_FILTER
                         Filter results to include subnets of a network. Multiple filters can be specified.

@@ -109,7 +109,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/
         "-d",
         "--output-delimiter",
         type=str,
-        help="Sets the output delimeter, default is new line.",
+        help="Sets the output delimeter, default is a new line.",
         default="\n",
     )
 
