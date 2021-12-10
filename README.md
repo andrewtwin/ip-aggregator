@@ -5,7 +5,8 @@ Does the opposite of [ip-deaggregator](https://github.com/andrewtwin/ip-deaggreg
 
 ## Usage
 ```
-usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-l] [-f INCLUDE_FILTER] [-F EXCLUDE_FILTER] [-m {prefix,net,wildcard}] [-S | -R] [-A] [-u] [-c] [-V] [subnet ...]
+usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-l] [-f INCLUDE_FILTER] [-F EXCLUDE_FILTER]
+[-m {prefix,net,wildcard}] [-S | -R] [-A] [-u] [-c] [-V] [subnet ...]
 
 Extract, filter, sort, and aggregate subnets.
 Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.
@@ -84,3 +85,60 @@ echo '192.168.0.0/24,192.168.2.0/24' | ip-aggregator -s 192.168.1.0/24 192.168.3
 192.168.0.0/22
 ```
 
+Extract subnets and addresses from text:
+```
+echo "These are IPs 10.0.0.1 10.0.0.2, 10.0.0.3 and a network 10.0.0.0/24" | ip-aggregator -s
+Input 4 addresses: 10.0.0.1/32
+10.0.0.2/32
+10.0.0.3/32
+10.0.0.0/24
+==================
+10.0.0.0/24
+==================
+1 subnets total
+```
+
+Don't aggrerate output, just extract and validate:
+```
+echo "These are IPs 10.0.0.1 10.0.0.2, 10.0.0.3 and a network 10.0.0.0/24" | ip-aggregator -s -A
+Input 4 addresses: 10.0.0.1/32
+10.0.0.2/32
+10.0.0.3/32
+10.0.0.0/24
+==================
+Not aggregating subnets as requested.
+==================
+10.0.0.1/32
+10.0.0.2/32
+10.0.0.3/32
+10.0.0.0/24
+==================
+4 subnets total
+```
+
+Apply filters to include subnets of a network:
+```
+echo "10.0.0.1, 172.16.0.1, 192.168.0.1" | ip-aggregator -s -f 10.0.0.0/8
+Input 3 addresses: 10.0.0.1/32
+172.16.0.1/32
+192.168.0.1/32
+==================
+10.0.0.1/32
+==================
+1 subnets total
+```
+
+Or apply filters to exlcude subnets:
+```
+echo "10.0.0.1, 172.16.0.1, 192.168.0.1" | ip-aggregator -s -F 10.0.0.0/8
+Input 3 addresses: 10.0.0.1/32
+172.16.0.1/32
+192.168.0.1/32
+==================
+172.16.0.1/32
+192.168.0.1/32
+==================
+2 subnets total
+```
+
+And a lot more!
