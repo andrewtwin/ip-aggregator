@@ -5,11 +5,10 @@ Does the opposite of [ip-deaggregator](https://github.com/andrewtwin/ip-deaggreg
 
 ## Usage
 ```
-usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-l] [-f INCLUDE_FILTER]
-[-F EXCLUDE_FILTER] [-m {prefix,net,wildcard}] [-S | -R] [-A] [-u] [-c] [subnet ...]
+usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-l] [-f INCLUDE_FILTER] [-F EXCLUDE_FILTER] [-m {prefix,net,wildcard}] [-S | -R] [-A] [-u] [-c] [-V] [subnet ...]
 
 Extract, filter, sort, and aggregate subnets.
-Copyright (C) 2021 Andrew Twin
+Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.
 
 positional arguments:
   subnet                Subnets to aggregate.
@@ -32,22 +31,9 @@ optional arguments:
   -A, --no-aggregate    Don't aggregate subnets. Just output valid networks and addresses.
   -u, --unique          Remove duplicates from the output, ignored if used without -A/--no-aggregate.
   -c, --count           Only output the count of the networks/IPs.
+  -V, --version         Print version and licence information and exit
 
-ip-aggregator v0.5.0
-https://github.com/andrewtwin/ip-aggregator
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/
+v0.5.0
 ```
 ## Installation
 Download the python zipapp from the [releases](https://github.com/andrewtwin/ip-aggregator/releases) page.
