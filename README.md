@@ -84,6 +84,18 @@ Input 4 addresses: 192.168.0.0/0.0.0.255
 1 subnets total
 ```
 
+With ranges of IP addresses:
+```
+ip-aggregator 10.0.0.0-10.0.7.255 192.168.0.0-192.168.3.255
+Input 2 addresses: 10.0.0.0/21
+192.168.0.0/22
+==================
+10.0.0.0/21
+192.168.0.0/22
+==================
+2 subnets total 
+```
+
 Just the output:
 ```
 echo '192.168.0.0/24,192.168.2.0/24' | ip-aggregator -s 192.168.1.0/24 192.168.3.0/24 -q
