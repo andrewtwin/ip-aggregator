@@ -1,5 +1,6 @@
-"""
-Extract, filter, sort, and aggregate IPs from subnets into larger supernets.
+"""Extract, filter, sort, and aggregate IPs from subnets into larger supernets."""
+
+LICENCE = """
 Copyright (C) 2021 Andrew Twin
 
 https://github.com/andrewtwin/ip-aggregator
@@ -17,11 +18,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+VERSION = "v0.5.0"
 
 import ipaddress
 import argparse
 import sys
 import re
+
 
 """Formatting"""
 NEWLINE = "\n"
@@ -70,22 +73,7 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description="""Extract, filter, sort, and aggregate subnets.
 Copyright (C) 2021 Andrew Twin""",
-        epilog="""ip-aggregator v0.5.0
-https://github.com/andrewtwin/ip-aggregator
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/
-""",
+        epilog=f"{VERSION}" + LICENCE,
     )
 
     parser.add_argument("subnet", type=str, help="Subnets to aggregate.", nargs="*")
@@ -182,7 +170,19 @@ along with this program.  If not, see <https://www.gnu.org/licenses/
         action="store_true",
     )
 
+    parser.add_argument(
+        "-V",
+        "--version",
+        help="Print version and licence information and exit",
+        action="store_true",
+    )
+
     args = parser.parse_args()
+
+    """If displaying version and licence, print and exit"""
+    if args.version:
+        print(f"{VERSION}" + LICENCE)
+        exit(0)
 
     """If just listing the classes, print and exit"""
     if args.list_classes:
