@@ -5,9 +5,10 @@ Does the opposite of [ip-deaggregator](https://github.com/andrewtwin/ip-deaggreg
 
 ## Usage
 ```
-usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-f INCLUDE_FILTER] [-F EXCLUDE_FILTER] [-m {prefix,net,wildcard}] [-S | -R] [-A] [-u] [-c] [subnet ...]
+usage: ip-aggregator [-h] [-s] [-q] [-d OUTPUT_DELIMITER] [-l] [-f INCLUDE_FILTER] [-F EXCLUDE_FILTER] [-m {prefix,net,wildcard}] [-S | -R] [-A] [-u] [-c] [subnet ...]
 
-Gather, filter, sort, and aggregate subnets.
+Extract, filter, sort, and aggregate subnets.
+Copyright (C) 2021 Andrew Twin
 
 positional arguments:
   subnet                Subnets to aggregate.
@@ -18,6 +19,7 @@ optional arguments:
   -q, --quiet           Only produce output, no other information.
   -d OUTPUT_DELIMITER, --output-delimiter OUTPUT_DELIMITER
                         Sets the output delimeter, default is new line.
+  -l, --list-classes    List IP classes and exit. Classes can be used in filters, supports -m/--mask-type flag.
   -f INCLUDE_FILTER, --include-filter INCLUDE_FILTER
                         Filter results to include subnets of a network. Multiple filters can be specified.
   -F EXCLUDE_FILTER, --exclude-filter EXCLUDE_FILTER
@@ -30,7 +32,21 @@ optional arguments:
   -u, --unique          Remove duplicates from the output, ignored if used without -A/--no-aggregate.
   -c, --count           Only output the count of the networks/IPs.
 
-ip-aggregator v0.4.0
+ip-aggregator v0.5.0
+https://github.com/andrewtwin/ip-aggregator
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/
 ```
 ## Installation
 Download the python zipapp from the [releases](https://github.com/andrewtwin/ip-aggregator/releases) page.
