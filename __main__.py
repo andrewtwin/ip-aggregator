@@ -252,7 +252,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         )
         for ipclass, ipvalue in IP4_ALISES.items():
             print(
-                f"{ipclass}{'.' * (10 - len(ipclass))}{delimiter.join(format_address(i, args.mask_type) for i in ipvalue)}"
+                f"{' ' * (8 - len(ipclass))}{ipclass}: {delimiter.join(format_address(i, args.mask_type) for i in ipvalue)}"
             )
         exit(0)
 
