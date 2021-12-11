@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-VERSION = "v0.6.0"
+VERSION = "v0.6.1"
 
 import ipaddress
 import argparse
@@ -92,7 +92,6 @@ def main() -> None:
 
     Main function.
     """
-
     parser = argparse.ArgumentParser(
         prog="ip-aggregator",
         formatter_class=argparse.RawDescriptionHelpFormatter,
