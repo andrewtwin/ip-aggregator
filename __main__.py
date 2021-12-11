@@ -214,7 +214,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     parser.add_argument(
         "-l",
         "--list-aliases",
-        help="List IP aliases and exit. Alises can be used in filters. Supports -m/--mask-type flag.",
+        help="List IP aliases and exit. Alises can be used in place of regular addresses. Supports -m/--mask-type flag.",
         action="store_true",
     )
 
@@ -273,10 +273,13 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
                     f"Supplied argument {subnet} are not a valid IPv4 or IPv6 addresses."
                 )
         else:
-            try:
-                subnets.append(ipaddress.ip_network(subnet))
-            except ValueError:
-                exit(f"Supplied argument {subnet} is not a valid IPv4 or IPv6 network.")
+            if subnet in IP4_ALIASES.keys():
+                subnets.extend(IP4_ALIASES.get(subnet))
+            else:
+                try:
+                    subnets.append(ipaddress.ip_network(subnet))
+                except ValueError:
+                    exit(f"Supplied argument {subnet} is not a valid IPv4 or IPv6 network.")
 
     """If there are no subnets to operate on exit with an error"""
     if len(subnets) < 1:
