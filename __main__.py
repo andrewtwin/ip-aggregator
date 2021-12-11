@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-VERSION = "v0.6.1"
+VERSION = "v0.6.2"
 
 import ipaddress
 import argparse
@@ -102,7 +102,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
 
     """Input args"""
     input_args = parser.add_argument_group(
-        title="input options", description="Where to take input."
+        title="input options", description="How to provide input."
     )
 
     input_args.add_argument(
@@ -136,20 +136,6 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         type=str,
         help="Filter results to exclude subnets of a network. Multiple filters can be specified.",
         action="append",
-    )
-
-    filter_args.add_argument(
-        "-p",
-        "--private-addresses",
-        help="Include private addresses",
-        action="store_true",
-    )
-
-    filter_args.add_argument(
-        "-P",
-        "--no-private-addresses",
-        help="Exclude private addresses",
-        action="store_true",
     )
 
     """Output args"""
@@ -228,7 +214,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     parser.add_argument(
         "-l",
         "--list-alises",
-        help="List IP aliases and exit. Classes can be used in filters, supports -m/--mask-type flag.",
+        help="List IP aliases and exit. Alises can be used in filters. Supports -m/--mask-type flag.",
         action="store_true",
     )
 
