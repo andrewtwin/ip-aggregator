@@ -64,13 +64,11 @@ IP4_RFC1918_ADDRESSES = [
     ipaddress.ip_network("172.16.0.0/12"),
     ipaddress.ip_network("192.168.0.0/16"),
 ]
-IPV4_NON_ROUTABLE = [
+IP4_NON_ROUTABLE = [
     ipaddress.ip_network("127.0.0.0/8"),
     ipaddress.ip_network("169.254.0.0/16"),
 ]
-IPV4_NON_GLOBAL = []
-IPV4_NON_GLOBAL.extend(IP4_RFC1918_ADDRESSES)
-IPV4_NON_GLOBAL.extend(IPV4_NON_ROUTABLE)
+IP4_NON_GLOBAL = IP4_RFC1918_ADDRESSES + IP4_NON_ROUTABLE
 
 IP4_ALISES = {
     "A": [ipaddress.ip_network("10.0.0.0/8")],
@@ -82,8 +80,8 @@ IP4_ALISES = {
     "LOCAL": [ipaddress.ip_network("127.0.0.0/8")],
     "LINK": [ipaddress.ip_network("169.254.0.0/16")],
     "PRIVATE": IP4_RFC1918_ADDRESSES,
-    "NOROUTE": IPV4_NON_ROUTABLE,
-    "NOGLOBAL": IPV4_NON_GLOBAL,
+    "NOROUTE": IP4_NON_ROUTABLE,
+    "NOGLOBAL": IP4_NON_GLOBAL,
 }
 
 
