@@ -15,7 +15,8 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.
 optional arguments:
   -h, --help            show this help message and exit
   -V, --version         Print version and licence information and exit
-  -l, --list-alises     List IP aliases and exit. Alises can be used in filters. Supports -m/--mask-type flag.
+  -l, --list-aliases    List IP aliases and exit. Alises can be used in place of regular addresses. Supports
+                        -m/--mask-type flag.
 
 input options:
   How to provide input.
@@ -45,7 +46,7 @@ output options:
   -u, --unique          Remove duplicates from the output, redundant without -A/--no-aggregate.
   -c, --count           Only output the count of the networks/IPs.
 
-v0.6.2
+v0.6.3
 ```
 ## Installation
 Download the python zipapp from the [releases](https://github.com/andrewtwin/ip-aggregator/releases) page.
