@@ -87,7 +87,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
 
     """Input args"""
     input_args = parser.add_argument_group(
-        title="input options", description="where to take input"
+        title="input options", description="From where to take input."
     )
 
     input_args.add_argument(
@@ -103,7 +103,8 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
 
     """Filter args"""
     filter_args = parser.add_argument_group(
-        title="filter options", description="filering of input"
+        title="filter options",
+        description="Filering of input subnets, includes are processed before excludes.",
     )
 
     filter_args.add_argument(
@@ -152,7 +153,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
 
     """Output args"""
     output_args = parser.add_argument_group(
-        title="output options", description="how to display output"
+        title="output options", description="How to display output."
     )
 
     output_args.add_argument(
@@ -335,6 +336,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         for subnet in subnets:
             if subnet not in unique_subnets:
                 unique_subnets.append(subnet)
+
         subnets.clear()
         subnets = unique_subnets
 
@@ -348,20 +350,23 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
             for subnet in subnets:
                 if subnet.subnet_of(include):
                     included_subnets.append(subnet)
+        filtered_subnets = included_subnets
     else:
-        included_subnets = subnets
+        filtered_subnets = subnets
 
     if len(excludes) > 0:
         exclude_subnets = aggregate_subnets(excludes)
-        for subnet in included_subnets:
+        not_excluded_subnets = []
+        for subnet in filtered_subnets:
             exclude_subnet = False
             for exclude in exclude_subnets:
                 if subnet.subnet_of(exclude):
                     exclude_subnet = True
             if not exclude_subnet:
-                filtered_subnets.append(subnet)
-    else:
-        processed_subnets = included_subnets
+                not_excluded_subnets.append(subnet)
+
+        filtered_subnets.clear
+        filtered_subnets = not_excluded_subnets
 
     """Check if subnets should be aggregated"""
     if args.no_aggregate:
