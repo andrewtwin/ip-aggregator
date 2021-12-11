@@ -86,7 +86,9 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     )
 
     """Input args"""
-    input_args = parser.add_argument_group(title="input options", description="where to take input")
+    input_args = parser.add_argument_group(
+        title="input options", description="where to take input"
+    )
 
     input_args.add_argument(
         "subnet", type=str, help="Subnets or ip ranges to aggregate.", nargs="*"
@@ -100,7 +102,9 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     )
 
     """Filter args"""
-    filter_args = parser.add_argument_group(title="filter options", description="filering of input")
+    filter_args = parser.add_argument_group(
+        title="filter options", description="filering of input"
+    )
 
     filter_args.add_argument(
         "-f",
@@ -147,7 +151,9 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     )
 
     """Output args"""
-    output_args = parser.add_argument_group(title="output options", description="how to display output")
+    output_args = parser.add_argument_group(
+        title="output options", description="how to display output"
+    )
 
     output_args.add_argument(
         "-q",
@@ -216,7 +222,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         help="Print version and licence information and exit",
         action="store_true",
     )
-    
+
     parser.add_argument(
         "-l",
         "--list-classes",
