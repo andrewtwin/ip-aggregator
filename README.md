@@ -5,7 +5,7 @@ Does the opposite of [ip-deaggregator](https://github.com/andrewtwin/ip-deaggreg
 
 ## Usage
 ```
-usage: ip-aggregator [-h] [-s] [-f INCLUDE_FILTER] [-F EXCLUDE_FILTER] [-p] [-P] [-q] [-d OUTPUT_DELIMITER]
+usage: ip-aggregator [-h] [-s] [-f INCLUDE_FILTER] [-F EXCLUDE_FILTER] [-q] [-d OUTPUT_DELIMITER]
                      [-m {prefix,net,wildcard}] [-S] [-R] [-A] [-u] [-c] [-V] [-l]
                      [subnet ...]
 
@@ -15,10 +15,10 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.
 optional arguments:
   -h, --help            show this help message and exit
   -V, --version         Print version and licence information and exit
-  -l, --list-alises     List IP aliases and exit. Classes can be used in filters, supports -m/--mask-type flag.
+  -l, --list-alises     List IP aliases and exit. Alises can be used in filters. Supports -m/--mask-type flag.
 
 input options:
-  Where to take input.
+  How to provide input.
 
   subnet                Subnets or ip ranges to aggregate.
   -s, --stdin           Extract addresses from stdin (only IPv4 addresses supported).
@@ -30,10 +30,6 @@ filter options:
                         Filter results to include subnets of a network. Multiple filters can be specified.
   -F EXCLUDE_FILTER, --exclude-filter EXCLUDE_FILTER
                         Filter results to exclude subnets of a network. Multiple filters can be specified.
-  -p, --private-addresses
-                        Include private addresses
-  -P, --no-private-addresses
-                        Exclude private addresses
 
 output options:
   How to display output.
@@ -49,7 +45,7 @@ output options:
   -u, --unique          Remove duplicates from the output, redundant without -A/--no-aggregate.
   -c, --count           Only output the count of the networks/IPs.
 
-v0.6.1
+v0.6.2
 ```
 ## Installation
 Download the python zipapp from the [releases](https://github.com/andrewtwin/ip-aggregator/releases) page.
