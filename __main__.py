@@ -86,7 +86,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     )
 
     """Input args"""
-    input_args = parser.add_argument_group("input options")
+    input_args = parser.add_argument_group(title="input options", description="where to take input")
 
     input_args.add_argument(
         "subnet", type=str, help="Subnets or ip ranges to aggregate.", nargs="*"
@@ -100,7 +100,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     )
 
     """Filter args"""
-    filter_args = parser.add_argument_group("filter options")
+    filter_args = parser.add_argument_group(title="filter options", description="filering of input")
 
     filter_args.add_argument(
         "-f",
@@ -120,34 +120,34 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
 
     filter_args.add_argument(
         "-g",
-        "--global",
+        "--global-addresses",
         help="Include global addresses",
         action="store_true",
     )
 
     filter_args.add_argument(
         "-G",
-        "--no-global",
+        "--no-global-addresses",
         help="Exclude global addresses",
         action="store_true",
     )
 
     filter_args.add_argument(
         "-p",
-        "--private",
+        "--private-addresses",
         help="Include private addresses",
         action="store_true",
     )
 
     filter_args.add_argument(
         "-P",
-        "--no-private",
+        "--no-private-addresses",
         help="Exclude private addresses",
         action="store_true",
     )
 
     """Output args"""
-    output_args = parser.add_argument_group("output options")
+    output_args = parser.add_argument_group(title="output options", description="how to display output")
 
     output_args.add_argument(
         "-q",
