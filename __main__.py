@@ -45,29 +45,16 @@ IP4_DOT = r"\."
 IP4_MASK = (
     r"(?:\/[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|\/3[0-2]|\/[1-2][\d]|\/[\d])?"
 )
-IP4_REGEX = re.compile(
-    IP4_OCTET
-    + IP4_DOT
-    + IP4_OCTET
-    + IP4_DOT
-    + IP4_OCTET
-    + IP4_DOT
-    + IP4_OCTET
-    + IP4_MASK
-    + END,
+IP4_ADDRESS = (
+    IP4_OCTET + IP4_DOT + IP4_OCTET + IP4_DOT + IP4_OCTET + IP4_DOT + IP4_OCTET
+)
+
+IP4_NETWORK = re.compile(
+    IP4_ADDRESS + IP4_MASK + END,
     re.ASCII,
 )
 IP4_RANGE_REGEX = re.compile(
-    CAPTURE_START
-    + IP4_OCTET
-    + IP4_DOT
-    + IP4_OCTET
-    + IP4_DOT
-    + IP4_OCTET
-    + IP4_DOT
-    + IP4_OCTET
-    + CAPTURE_END
-    + RANGE_SEPERATOR,
+    CAPTURE_START + IP4_ADDRESS + CAPTURE_END + RANGE_SEPERATOR,
     re.ASCII,
 )
 
@@ -225,7 +212,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     subnets = []
     if args.stdin:
         for line in stdin:
-            read_subnets = re.findall(IP4_REGEX, line)
+            read_subnets = re.findall(IP4_NETWORK, line)
             for address in read_subnets:
                 try:
                     subnets.append(ipaddress.ip_network(address))
@@ -241,12 +228,14 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         if len(subnet_range_list) == 2:
             try:
                 subnet_range = ipaddress.summarize_address_range(
-                   ipaddress.ip_address(subnet_range_list[0]),
-                   ipaddress.ip_address(subnet_range_list[1])
+                    ipaddress.ip_address(subnet_range_list[0]),
+                    ipaddress.ip_address(subnet_range_list[1]),
                 )
                 subnets.extend(subnet_range)
             except ValueError:
-                exit(f"Supplied argument {subnet} are not a valid IPv4 or IPv6 addresses.")
+                exit(
+                    f"Supplied argument {subnet} are not a valid IPv4 or IPv6 addresses."
+                )
         else:
             try:
                 subnets.append(ipaddress.ip_network(subnet))
