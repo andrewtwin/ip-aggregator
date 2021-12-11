@@ -59,26 +59,28 @@ IP4_RANGE = re.compile(
 )
 
 """IP Network Constants"""
-IP4_RFC1918_ADDRESSES = [
-    ipaddress.ip_network("10.0.0.0/8"),
-    ipaddress.ip_network("172.16.0.0/12"),
-    ipaddress.ip_network("192.168.0.0/16"),
-]
-IP4_NON_ROUTABLE = [
-    ipaddress.ip_network("127.0.0.0/8"),
-    ipaddress.ip_network("169.254.0.0/16"),
-]
+IP4_CLASS_A = [ipaddress.ip_network("10.0.0.0/8")]
+IP4_CLASS_B = [ipaddress.ip_network("172.16.0.0/12")]
+IP4_CLASS_C = [ipaddress.ip_network("192.168.0.0/16")]
+IP4_CLASS_D = [ipaddress.ip_network("224.0.0.0/4")]
+IP4_CLASS_E = [ipaddress.ip_network("240.0.0.0/4")]
+IP4_CGNAT = [ipaddress.ip_network("100.64.0.0/10")]
+IP4_LOCAL = [ipaddress.ip_network("127.0.0.0/8")]
+IP4_LINK_LOCAL = [ipaddress.ip_network("169.254.0.0/16")]
+
+IP4_RFC1918_ADDRESSES = IP4_CLASS_A + IP4_CLASS_B + IP4_CLASS_C
+IP4_NON_ROUTABLE = IP4_LOCAL + IP4_LINK_LOCAL
 IP4_NON_GLOBAL = IP4_RFC1918_ADDRESSES + IP4_NON_ROUTABLE
 
 IP4_ALISES = {
-    "A": [ipaddress.ip_network("10.0.0.0/8")],
-    "B": [ipaddress.ip_network("172.16.0.0/12")],
-    "C": [ipaddress.ip_network("192.168.0.0/16")],
-    "D": [ipaddress.ip_network("224.0.0.0/4")],
-    "E": [ipaddress.ip_network("240.0.0.0/4")],
-    "CGNAT": [ipaddress.ip_network("100.64.0.0/10")],
-    "LOCAL": [ipaddress.ip_network("127.0.0.0/8")],
-    "LINK": [ipaddress.ip_network("169.254.0.0/16")],
+    "A": IP4_CLASS_A,
+    "B": IP4_CLASS_B,
+    "C": IP4_CLASS_C,
+    "D": IP4_CLASS_D,
+    "E": IP4_CLASS_E,
+    "CGNAT": IP4_CGNAT,
+    "LOCAL": IP4_LOCAL,
+    "LINK": IP4_LINK_LOCAL,
     "PRIVATE": IP4_RFC1918_ADDRESSES,
     "NOROUTE": IP4_NON_ROUTABLE,
     "NOGLOBAL": IP4_NON_GLOBAL,
