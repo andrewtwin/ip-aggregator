@@ -1,0 +1,10 @@
+v0.6.3
+- Formatting and spelling in help.
+
+v0.6.2
+- All filtering now happens on the input, before aggregation.
+- Added more IP Classes / Aliases for use with filters 
+
+v0.5.0
+- Added IP network aliases
+- Added additional license information
