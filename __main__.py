@@ -326,36 +326,30 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
             + RULE
         )
 
-    """Start processing subnets"""
-    if args.no_aggregate:
-        if args.notquiet:
-            print(
-                "Not aggregating subnets as requested." + NEWLINE + RULE,
-                file=stderr,
-            )
-        """Remove duplciate subnets"""
-        if args.unique:
-            new_subnets = []
-            for subnet in subnets:
-                if subnet not in new_subnets:
-                    new_subnets.append(subnet)
-        else:
-            new_subnets = subnets
-    else:
-        new_subnets = aggregate_subnets(subnets)
+    """Start processing subnets
+    Duplicates can be removed before filters applied
+    no need to remove duplicates if the subnets are going to be aggrerated.
+    """
+    if args.no_aggregate and args.unique:
+        unique_subnets = []
+        for subnet in subnets:
+            if subnet not in unique_subnets:
+                    unique_subnets.append(subnet)
+        subnets.clear()
+        subnets = unique_subnets
 
-    processed_subnets = []
+    filtered_subnets = []
 
     """Process Includes and Excludes"""
     if len(includes) > 0:
         included_subnets = []
         include_subnets = aggregate_subnets(includes)
         for include in include_subnets:
-            for subnet in new_subnets:
+            for subnet in subnets:
                 if subnet.subnet_of(include):
                     included_subnets.append(subnet)
     else:
-        included_subnets = new_subnets
+        included_subnets = subnets
 
     if len(excludes) > 0:
         exclude_subnets = aggregate_subnets(excludes)
@@ -365,9 +359,20 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
                 if subnet.subnet_of(exclude):
                     exclude_subnet = True
             if not exclude_subnet:
-                processed_subnets.append(subnet)
+                filtered_subnets.append(subnet)
     else:
         processed_subnets = included_subnets
+
+    """Check if subnets should be aggregated"""
+    if args.no_aggregate:
+        if args.notquiet:
+            print(
+                "Not aggregating subnets as requested." + NEWLINE + RULE,
+                file=stderr,
+            )
+        processed_subnets = filtered_subnets
+    else:
+        processed_subnets = aggregate_subnets(filtered_subnets)
 
     """Do sorting if required"""
     if args.sort:
