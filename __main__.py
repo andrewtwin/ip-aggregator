@@ -252,7 +252,8 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         )
         for ipclass, ipvalue in IP4_ALISES.items():
             print(
-                f"{' ' * (8 - len(ipclass))}{ipclass}: {delimiter.join(format_address(i, args.mask_type) for i in ipvalue)}"
+                f"{' ' * (8 - len(ipclass))}{ipclass}: "
+                f"{delimiter.join(format_address(i, args.mask_type) for i in ipvalue)}"
             )
         exit(0)
 
@@ -301,7 +302,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     if args.include_filter is not None:
         for address in args.include_filter:
             if address in IP4_ALISES.keys():
-                includes.append(IP4_ALISES.get(address))
+                includes.extend(IP4_ALISES.get(address))
             else:
                 try:
                     includes.append(ipaddress.ip_network(address))
@@ -315,7 +316,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     if args.exclude_filter is not None:
         for address in args.exclude_filter:
             if address in IP4_ALISES.keys():
-                excludes.append(IP4_ALISES.get(address))
+                excludes.extend(IP4_ALISES.get(address))
             else:
                 try:
                     excludes.append(ipaddress.ip_network(address))
@@ -323,7 +324,6 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
                     exit(
                         f"Supplied argument exclude {address} is not a valid IPv4 or IPv6 network."
                     )
-
     if args.notquiet:
         print(
             f"Input {len(subnets)} addresses: "
