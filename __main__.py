@@ -102,7 +102,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
 
     """Input args"""
     input_args = parser.add_argument_group(
-        title="input options", description="From where to take input."
+        title="input options", description="Where to take input."
     )
 
     input_args.add_argument(
@@ -119,7 +119,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     """Filter args"""
     filter_args = parser.add_argument_group(
         title="filter options",
-        description="Filering of input subnets, includes are processed before excludes.",
+        description="Filering of input networks, includes are processed before excludes.",
     )
 
     filter_args.add_argument(
@@ -206,7 +206,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     output_args.add_argument(
         "-u",
         "--unique",
-        help="Remove duplicates from the output, ignored if used without -A/--no-aggregate.",
+        help="Remove duplicates from the output, redundant without -A/--no-aggregate.",
         action="store_true",
     )
 
