@@ -334,7 +334,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         unique_subnets = []
         for subnet in subnets:
             if subnet not in unique_subnets:
-                    unique_subnets.append(subnet)
+                unique_subnets.append(subnet)
         subnets.clear()
         subnets = unique_subnets
 
