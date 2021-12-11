@@ -59,15 +59,31 @@ IP4_RANGE = re.compile(
 )
 
 """IP Network Constants"""
-IP4_CLASSES = {
-    "A": ipaddress.ip_network("10.0.0.0/8"),
-    "B": ipaddress.ip_network("172.16.0.0/12"),
-    "C": ipaddress.ip_network("192.168.0.0/16"),
-    "D": ipaddress.ip_network("224.0.0.0/4"),
-    "E": ipaddress.ip_network("240.0.0.0/4"),
-    "N": ipaddress.ip_network("100.64.0.0/10"),
-    "L": ipaddress.ip_network("127.0.0.0/8"),
-    "U": ipaddress.ip_network("169.254.0.0/16"),
+IP4_RFC1918_ADDRESSES = [
+    ipaddress.ip_network("10.0.0.0/8"),
+    ipaddress.ip_network("172.16.0.0/12"),
+    ipaddress.ip_network("192.168.0.0/16"),
+]
+IPV4_NON_ROUTABLE = [
+    ipaddress.ip_network("127.0.0.0/8"),
+    ipaddress.ip_network("169.254.0.0/16"),
+]
+IPV4_NON_GLOBAL = []
+IPV4_NON_GLOBAL.extend(IP4_RFC1918_ADDRESSES)
+IPV4_NON_GLOBAL.extend(IPV4_NON_ROUTABLE)
+
+IP4_ALISES = {
+    "A": [ipaddress.ip_network("10.0.0.0/8")],
+    "B": [ipaddress.ip_network("172.16.0.0/12")],
+    "C": [ipaddress.ip_network("192.168.0.0/16")],
+    "D": [ipaddress.ip_network("224.0.0.0/4")],
+    "E": [ipaddress.ip_network("240.0.0.0/4")],
+    "CGNAT": [ipaddress.ip_network("100.64.0.0/10")],
+    "LOCAL": [ipaddress.ip_network("127.0.0.0/8")],
+    "LINK": [ipaddress.ip_network("169.254.0.0/16")],
+    "PRIVATE": IP4_RFC1918_ADDRESSES,
+    "NOROUTE": IPV4_NON_ROUTABLE,
+    "NOGLOBAL": IPV4_NON_GLOBAL,
 }
 
 
@@ -121,20 +137,6 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         type=str,
         help="Filter results to exclude subnets of a network. Multiple filters can be specified.",
         action="append",
-    )
-
-    filter_args.add_argument(
-        "-g",
-        "--global-addresses",
-        help="Include global addresses",
-        action="store_true",
-    )
-
-    filter_args.add_argument(
-        "-G",
-        "--no-global-addresses",
-        help="Exclude global addresses",
-        action="store_true",
     )
 
     filter_args.add_argument(
@@ -226,8 +228,8 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
 
     parser.add_argument(
         "-l",
-        "--list-classes",
-        help="List IP classes and exit. Classes can be used in filters, supports -m/--mask-type flag.",
+        "--list-alises",
+        help="List IP aliases and exit. Classes can be used in filters, supports -m/--mask-type flag.",
         action="store_true",
     )
 
@@ -239,16 +241,19 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         exit(0)
 
     """If just listing the classes, print and exit"""
-    if args.list_classes:
+    if args.list_alises:
+        delimiter = ", "
         print(
-            "Recognised address class aliases."
+            "Recognised address aliases."
             + NEWLINE
             + "These can be used alongside regular addresses in filters:"
             + NEWLINE
             + RULE * 2,
         )
-        for ipclass, ipvalue in IP4_CLASSES.items():
-            print(f"{ipclass}\t{format_address(ipvalue, args.mask_type)}")
+        for ipclass, ipvalue in IP4_ALISES.items():
+            print(
+                f"{ipclass}{'.' * (10 - len(ipclass))}{delimiter.join(format_address(i, args.mask_type) for i in ipvalue)}"
+            )
         exit(0)
 
     delimiter = args.output_delimiter
@@ -295,8 +300,8 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     includes = []
     if args.include_filter is not None:
         for address in args.include_filter:
-            if address in IP4_CLASSES.keys():
-                includes.append(IP4_CLASSES.get(address))
+            if address in IP4_ALISES.keys():
+                includes.append(IP4_ALISES.get(address))
             else:
                 try:
                     includes.append(ipaddress.ip_network(address))
@@ -309,8 +314,8 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     excludes = []
     if args.exclude_filter is not None:
         for address in args.exclude_filter:
-            if address in IP4_CLASSES.keys():
-                excludes.append(IP4_CLASSES.get(address))
+            if address in IP4_ALISES.keys():
+                excludes.append(IP4_ALISES.get(address))
             else:
                 try:
                     excludes.append(ipaddress.ip_network(address))
@@ -336,13 +341,13 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         for subnet in subnets:
             if subnet not in unique_subnets:
                 unique_subnets.append(subnet)
-
         subnets.clear()
         subnets = unique_subnets
 
+    """Process filtering"""
     filtered_subnets = []
 
-    """Process Includes and Excludes"""
+    """Includes"""
     if len(includes) > 0:
         included_subnets = []
         include_subnets = aggregate_subnets(includes)
@@ -354,6 +359,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     else:
         filtered_subnets = subnets
 
+    """Excludes"""
     if len(excludes) > 0:
         exclude_subnets = aggregate_subnets(excludes)
         not_excluded_subnets = []
@@ -364,7 +370,6 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
                     exclude_subnet = True
             if not exclude_subnet:
                 not_excluded_subnets.append(subnet)
-
         filtered_subnets.clear
         filtered_subnets = not_excluded_subnets
 
