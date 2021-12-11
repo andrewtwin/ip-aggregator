@@ -383,7 +383,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     """Output addresses"""
     if args.count:
         print(f"{len(processed_subnets)}")
-    else:
+    elif len(processed_subnets) > 0:
         print(
             f"{delimiter.join(format_address(i, args.mask_type) for i in processed_subnets)}"
         )
