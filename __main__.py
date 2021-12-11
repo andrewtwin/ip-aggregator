@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-VERSION = "v0.5.0"
+VERSION = "v0.6.0"
 
 import ipaddress
 import argparse
@@ -53,7 +53,7 @@ IP4_NETWORK = re.compile(
     IP4_ADDRESS + IP4_MASK + END,
     re.ASCII,
 )
-IP4_RANGE_REGEX = re.compile(
+IP4_RANGE = re.compile(
     CAPTURE_START + IP4_ADDRESS + CAPTURE_END + RANGE_SEPERATOR,
     re.ASCII,
 )
@@ -85,39 +85,24 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         epilog=f"{VERSION}",
     )
 
-    parser.add_argument("subnet", type=str, help="Subnets to aggregate.", nargs="*")
+    """Input args"""
+    input_args = parser.add_argument_group("input options")
 
-    parser.add_argument(
+    input_args.add_argument(
+        "subnet", type=str, help="Subnets or ip ranges to aggregate.", nargs="*"
+    )
+
+    input_args.add_argument(
         "-s",
         "--stdin",
         help="Extract addresses from stdin (only IPv4 addresses supported).",
         action="store_true",
     )
 
-    parser.add_argument(
-        "-q",
-        "--quiet",
-        help="Only produce output, no other information.",
-        action="store_false",
-        dest="notquiet",
-    )
+    """Filter args"""
+    filter_args = parser.add_argument_group("filter options")
 
-    parser.add_argument(
-        "-d",
-        "--output-delimiter",
-        type=str,
-        help="Sets the output delimeter, default is a new line.",
-        default="\n",
-    )
-
-    parser.add_argument(
-        "-l",
-        "--list-classes",
-        help="List IP classes and exit. Classes can be used in filters, supports -m/--mask-type flag.",
-        action="store_true",
-    )
-
-    parser.add_argument(
+    filter_args.add_argument(
         "-f",
         "--include-filter",
         type=str,
@@ -125,7 +110,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         action="append",
     )
 
-    parser.add_argument(
+    filter_args.add_argument(
         "-F",
         "--exclude-filter",
         type=str,
@@ -133,7 +118,54 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         action="append",
     )
 
-    parser.add_argument(
+    filter_args.add_argument(
+        "-g",
+        "--global",
+        help="Include global addresses",
+        action="store_true",
+    )
+
+    filter_args.add_argument(
+        "-G",
+        "--no-global",
+        help="Exclude global addresses",
+        action="store_true",
+    )
+
+    filter_args.add_argument(
+        "-p",
+        "--private",
+        help="Include private addresses",
+        action="store_true",
+    )
+
+    filter_args.add_argument(
+        "-P",
+        "--no-private",
+        help="Exclude private addresses",
+        action="store_true",
+    )
+
+    """Output args"""
+    output_args = parser.add_argument_group("output options")
+
+    output_args.add_argument(
+        "-q",
+        "--quiet",
+        help="Only produce output, no other information.",
+        action="store_false",
+        dest="notquiet",
+    )
+
+    output_args.add_argument(
+        "-d",
+        "--output-delimiter",
+        type=str,
+        help="Sets the output delimeter, default is a new line.",
+        default="\n",
+    )
+
+    output_args.add_argument(
         "-m",
         "--mask-type",
         help="Use prefix length (default), net mask, or wildcard mask.",
@@ -142,47 +174,53 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         default="prefix",
     )
 
-    sorting_options = parser.add_mutually_exclusive_group()
-
-    sorting_options.add_argument(
+    output_args.add_argument(
         "-S",
         "--sort",
         help="Sort the output, ascending order.",
         action="store_true",
     )
 
-    sorting_options.add_argument(
+    output_args.add_argument(
         "-R",
         "--reverse-sort",
         help="Sort the output, decending order.",
         action="store_true",
     )
 
-    parser.add_argument(
+    output_args.add_argument(
         "-A",
         "--no-aggregate",
         help="Don't aggregate subnets. Just output valid networks and addresses.",
         action="store_true",
     )
 
-    parser.add_argument(
+    output_args.add_argument(
         "-u",
         "--unique",
         help="Remove duplicates from the output, ignored if used without -A/--no-aggregate.",
         action="store_true",
     )
 
-    parser.add_argument(
+    output_args.add_argument(
         "-c",
         "--count",
         help="Only output the count of the networks/IPs.",
         action="store_true",
     )
 
+    """Misc args"""
     parser.add_argument(
         "-V",
         "--version",
         help="Print version and licence information and exit",
+        action="store_true",
+    )
+    
+    parser.add_argument(
+        "-l",
+        "--list-classes",
+        help="List IP classes and exit. Classes can be used in filters, supports -m/--mask-type flag.",
         action="store_true",
     )
 
@@ -222,9 +260,9 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
                         file=stderr,
                     )
 
-    """Check for IP range otherwise assume subnet"""
+    """Check for IP range otherwise assume single ip or subnet"""
     for subnet in args.subnet:
-        subnet_range_list = re.findall(IP4_RANGE_REGEX, subnet)
+        subnet_range_list = re.findall(IP4_RANGE, subnet)
         if len(subnet_range_list) == 2:
             try:
                 subnet_range = ipaddress.summarize_address_range(
