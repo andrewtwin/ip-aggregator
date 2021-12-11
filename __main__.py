@@ -19,11 +19,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-VERSION = "v0.5.0"
+VERSION = "v0.6.1"
 
 import ipaddress
 import argparse
-import sys
+from sys import stderr, stdin
 import re
 
 
@@ -33,6 +33,9 @@ RULE = "=" * 18
 
 """Regex Definitions"""
 SEPERATOR = r"[\D]"
+RANGE_SEPERATOR = r"[-]?"
+CAPTURE_START = r"("
+CAPTURE_END = r")"
 END = r"(?=" + SEPERATOR + ")"
 
 """IPV4"""
@@ -42,29 +45,45 @@ IP4_DOT = r"\."
 IP4_MASK = (
     r"(?:\/[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|\/3[0-2]|\/[1-2][\d]|\/[\d])?"
 )
-IP4_REGEX = re.compile(
-    IP4_OCTET
-    + IP4_DOT
-    + IP4_OCTET
-    + IP4_DOT
-    + IP4_OCTET
-    + IP4_DOT
-    + IP4_OCTET
-    + IP4_MASK
-    + END,
+IP4_ADDRESS = (
+    IP4_OCTET + IP4_DOT + IP4_OCTET + IP4_DOT + IP4_OCTET + IP4_DOT + IP4_OCTET
+)
+
+IP4_NETWORK = re.compile(
+    IP4_ADDRESS + IP4_MASK + END,
+    re.ASCII,
+)
+IP4_RANGE = re.compile(
+    CAPTURE_START + IP4_ADDRESS + CAPTURE_END + RANGE_SEPERATOR,
     re.ASCII,
 )
 
 """IP Network Constants"""
-IP4_CLASSES = {
-    "A": ipaddress.ip_network("10.0.0.0/8"),
-    "B": ipaddress.ip_network("172.16.0.0/12"),
-    "C": ipaddress.ip_network("192.168.0.0/16"),
-    "D": ipaddress.ip_network("224.0.0.0/4"),
-    "E": ipaddress.ip_network("240.0.0.0/4"),
-    "N": ipaddress.ip_network("100.64.0.0/10"),
-    "L": ipaddress.ip_network("127.0.0.0/8"),
-    "U": ipaddress.ip_network("169.254.0.0/16"),
+IP4_CLASS_A = [ipaddress.ip_network("10.0.0.0/8")]
+IP4_CLASS_B = [ipaddress.ip_network("172.16.0.0/12")]
+IP4_CLASS_C = [ipaddress.ip_network("192.168.0.0/16")]
+IP4_CLASS_D = [ipaddress.ip_network("224.0.0.0/4")]
+IP4_CLASS_E = [ipaddress.ip_network("240.0.0.0/4")]
+IP4_CGNAT = [ipaddress.ip_network("100.64.0.0/10")]
+IP4_LOCAL = [ipaddress.ip_network("127.0.0.0/8")]
+IP4_LINK_LOCAL = [ipaddress.ip_network("169.254.0.0/16")]
+
+IP4_RFC1918_ADDRESSES = IP4_CLASS_A + IP4_CLASS_B + IP4_CLASS_C
+IP4_NON_ROUTABLE = IP4_LOCAL + IP4_LINK_LOCAL
+IP4_NON_GLOBAL = IP4_RFC1918_ADDRESSES + IP4_NON_ROUTABLE
+
+IP4_ALISES = {
+    "A": IP4_CLASS_A,
+    "B": IP4_CLASS_B,
+    "C": IP4_CLASS_C,
+    "D": IP4_CLASS_D,
+    "E": IP4_CLASS_E,
+    "CGNAT": IP4_CGNAT,
+    "LOCAL": IP4_LOCAL,
+    "LINK": IP4_LINK_LOCAL,
+    "PRIVATE": IP4_RFC1918_ADDRESSES,
+    "NOROUTE": IP4_NON_ROUTABLE,
+    "NOGLOBAL": IP4_NON_GLOBAL,
 }
 
 
@@ -73,7 +92,6 @@ def main() -> None:
 
     Main function.
     """
-
     parser = argparse.ArgumentParser(
         prog="ip-aggregator",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -82,39 +100,29 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         epilog=f"{VERSION}",
     )
 
-    parser.add_argument("subnet", type=str, help="Subnets to aggregate.", nargs="*")
+    """Input args"""
+    input_args = parser.add_argument_group(
+        title="input options", description="Where to take input."
+    )
 
-    parser.add_argument(
+    input_args.add_argument(
+        "subnet", type=str, help="Subnets or ip ranges to aggregate.", nargs="*"
+    )
+
+    input_args.add_argument(
         "-s",
         "--stdin",
         help="Extract addresses from stdin (only IPv4 addresses supported).",
         action="store_true",
     )
 
-    parser.add_argument(
-        "-q",
-        "--quiet",
-        help="Only produce output, no other information.",
-        action="store_false",
-        dest="notquiet",
+    """Filter args"""
+    filter_args = parser.add_argument_group(
+        title="filter options",
+        description="Filering of input networks, includes are processed before excludes.",
     )
 
-    parser.add_argument(
-        "-d",
-        "--output-delimiter",
-        type=str,
-        help="Sets the output delimeter, default is a new line.",
-        default="\n",
-    )
-
-    parser.add_argument(
-        "-l",
-        "--list-classes",
-        help="List IP classes and exit. Classes can be used in filters, supports -m/--mask-type flag.",
-        action="store_true",
-    )
-
-    parser.add_argument(
+    filter_args.add_argument(
         "-f",
         "--include-filter",
         type=str,
@@ -122,7 +130,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         action="append",
     )
 
-    parser.add_argument(
+    filter_args.add_argument(
         "-F",
         "--exclude-filter",
         type=str,
@@ -130,7 +138,42 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         action="append",
     )
 
-    parser.add_argument(
+    filter_args.add_argument(
+        "-p",
+        "--private-addresses",
+        help="Include private addresses",
+        action="store_true",
+    )
+
+    filter_args.add_argument(
+        "-P",
+        "--no-private-addresses",
+        help="Exclude private addresses",
+        action="store_true",
+    )
+
+    """Output args"""
+    output_args = parser.add_argument_group(
+        title="output options", description="How to display output."
+    )
+
+    output_args.add_argument(
+        "-q",
+        "--quiet",
+        help="Only produce output, no other information.",
+        action="store_false",
+        dest="notquiet",
+    )
+
+    output_args.add_argument(
+        "-d",
+        "--output-delimiter",
+        type=str,
+        help="Sets the output delimeter, default is a new line.",
+        default="\n",
+    )
+
+    output_args.add_argument(
         "-m",
         "--mask-type",
         help="Use prefix length (default), net mask, or wildcard mask.",
@@ -139,47 +182,53 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         default="prefix",
     )
 
-    sorting_options = parser.add_mutually_exclusive_group()
-
-    sorting_options.add_argument(
+    output_args.add_argument(
         "-S",
         "--sort",
         help="Sort the output, ascending order.",
         action="store_true",
     )
 
-    sorting_options.add_argument(
+    output_args.add_argument(
         "-R",
         "--reverse-sort",
         help="Sort the output, decending order.",
         action="store_true",
     )
 
-    parser.add_argument(
+    output_args.add_argument(
         "-A",
         "--no-aggregate",
         help="Don't aggregate subnets. Just output valid networks and addresses.",
         action="store_true",
     )
 
-    parser.add_argument(
+    output_args.add_argument(
         "-u",
         "--unique",
-        help="Remove duplicates from the output, ignored if used without -A/--no-aggregate.",
+        help="Remove duplicates from the output, redundant without -A/--no-aggregate.",
         action="store_true",
     )
 
-    parser.add_argument(
+    output_args.add_argument(
         "-c",
         "--count",
         help="Only output the count of the networks/IPs.",
         action="store_true",
     )
 
+    """Misc args"""
     parser.add_argument(
         "-V",
         "--version",
         help="Print version and licence information and exit",
+        action="store_true",
+    )
+
+    parser.add_argument(
+        "-l",
+        "--list-alises",
+        help="List IP aliases and exit. Classes can be used in filters, supports -m/--mask-type flag.",
         action="store_true",
     )
 
@@ -191,16 +240,20 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         exit(0)
 
     """If just listing the classes, print and exit"""
-    if args.list_classes:
+    if args.list_alises:
+        delimiter = ", "
         print(
-            "Recognised address class aliases."
+            "Recognised address aliases."
             + NEWLINE
             + "These can be used alongside regular addresses in filters:"
             + NEWLINE
             + RULE * 2,
         )
-        for ipclass, ipvalue in IP4_CLASSES.items():
-            print(f"{ipclass}\t{format_address(ipvalue, args.mask_type)}")
+        for ipclass, ipvalue in IP4_ALISES.items():
+            print(
+                f"{' ' * (8 - len(ipclass))}{ipclass}: "
+                f"{delimiter.join(format_address(i, args.mask_type) for i in ipvalue)}"
+            )
         exit(0)
 
     delimiter = args.output_delimiter
@@ -208,22 +261,36 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     """Populate subnets to process"""
     subnets = []
     if args.stdin:
-        for line in sys.stdin:
-            read_subnets = re.findall(IP4_REGEX, line)
+        for line in stdin:
+            read_subnets = re.findall(IP4_NETWORK, line)
             for address in read_subnets:
                 try:
                     subnets.append(ipaddress.ip_network(address))
                 except ValueError:
                     print(
                         f"WARNING: Address {address} from stdin is not a valid IPv4 address or network, ignoring",
-                        file=sys.stderr,
+                        file=stderr,
                     )
 
+    """Check for IP range otherwise assume single ip or subnet"""
     for subnet in args.subnet:
-        try:
-            subnets.append(ipaddress.ip_network(subnet))
-        except ValueError:
-            exit(f"Supplied argument {subnet} is not a valid IPv4 or IPv6 network.")
+        subnet_range_list = re.findall(IP4_RANGE, subnet)
+        if len(subnet_range_list) == 2:
+            try:
+                subnet_range = ipaddress.summarize_address_range(
+                    ipaddress.ip_address(subnet_range_list[0]),
+                    ipaddress.ip_address(subnet_range_list[1]),
+                )
+                subnets.extend(subnet_range)
+            except ValueError:
+                exit(
+                    f"Supplied argument {subnet} are not a valid IPv4 or IPv6 addresses."
+                )
+        else:
+            try:
+                subnets.append(ipaddress.ip_network(subnet))
+            except ValueError:
+                exit(f"Supplied argument {subnet} is not a valid IPv4 or IPv6 network.")
 
     """If there are no subnets to operate on exit with an error"""
     if len(subnets) < 1:
@@ -233,8 +300,8 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     includes = []
     if args.include_filter is not None:
         for address in args.include_filter:
-            if address in IP4_CLASSES.keys():
-                includes.append(IP4_CLASSES.get(address))
+            if address in IP4_ALISES.keys():
+                includes.extend(IP4_ALISES.get(address))
             else:
                 try:
                     includes.append(ipaddress.ip_network(address))
@@ -247,8 +314,8 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     excludes = []
     if args.exclude_filter is not None:
         for address in args.exclude_filter:
-            if address in IP4_CLASSES.keys():
-                excludes.append(IP4_CLASSES.get(address))
+            if address in IP4_ALISES.keys():
+                excludes.extend(IP4_ALISES.get(address))
             else:
                 try:
                     excludes.append(ipaddress.ip_network(address))
@@ -256,7 +323,6 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
                     exit(
                         f"Supplied argument exclude {address} is not a valid IPv4 or IPv6 network."
                     )
-
     if args.notquiet:
         print(
             f"Input {len(subnets)} addresses: "
@@ -265,48 +331,57 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
             + RULE
         )
 
-    """Start processing subnets"""
-    if args.no_aggregate:
-        if args.notquiet:
-            print(
-                "Not aggregating subnets as requested." + NEWLINE + RULE,
-                file=sys.stderr,
-            )
-        """Remove duplciate subnets"""
-        if args.unique:
-            new_subnets = []
-            for subnet in subnets:
-                if subnet not in new_subnets:
-                    new_subnets.append(subnet)
-        else:
-            new_subnets = subnets
-    else:
-        new_subnets = aggregate_subnets(subnets)
+    """Start processing subnets
+    Duplicates can be removed before filters applied
+    no need to remove duplicates if the subnets are going to be aggrerated.
+    """
+    if args.no_aggregate and args.unique:
+        unique_subnets = []
+        for subnet in subnets:
+            if subnet not in unique_subnets:
+                unique_subnets.append(subnet)
+        subnets.clear()
+        subnets = unique_subnets
 
-    processed_subnets = []
+    """Process filtering"""
+    filtered_subnets = []
 
-    """Process Includes and Excludes"""
+    """Includes"""
     if len(includes) > 0:
         included_subnets = []
         include_subnets = aggregate_subnets(includes)
         for include in include_subnets:
-            for subnet in new_subnets:
+            for subnet in subnets:
                 if subnet.subnet_of(include):
                     included_subnets.append(subnet)
+        filtered_subnets = included_subnets
     else:
-        included_subnets = new_subnets
+        filtered_subnets = subnets
 
+    """Excludes"""
     if len(excludes) > 0:
         exclude_subnets = aggregate_subnets(excludes)
-        for subnet in included_subnets:
+        not_excluded_subnets = []
+        for subnet in filtered_subnets:
             exclude_subnet = False
             for exclude in exclude_subnets:
                 if subnet.subnet_of(exclude):
                     exclude_subnet = True
             if not exclude_subnet:
-                processed_subnets.append(subnet)
+                not_excluded_subnets.append(subnet)
+        filtered_subnets.clear
+        filtered_subnets = not_excluded_subnets
+
+    """Check if subnets should be aggregated"""
+    if args.no_aggregate:
+        if args.notquiet:
+            print(
+                "Not aggregating subnets as requested." + NEWLINE + RULE,
+                file=stderr,
+            )
+        processed_subnets = filtered_subnets
     else:
-        processed_subnets = included_subnets
+        processed_subnets = aggregate_subnets(filtered_subnets)
 
     """Do sorting if required"""
     if args.sort:
@@ -317,7 +392,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     """Output addresses"""
     if args.count:
         print(f"{len(processed_subnets)}")
-    else:
+    elif len(processed_subnets) > 0:
         print(
             f"{delimiter.join(format_address(i, args.mask_type) for i in processed_subnets)}"
         )
