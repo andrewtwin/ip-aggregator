@@ -72,7 +72,7 @@ IP4_RFC1918_ADDRESSES = IP4_CLASS_A + IP4_CLASS_B + IP4_CLASS_C
 IP4_NON_ROUTABLE = IP4_LOCAL + IP4_LINK_LOCAL
 IP4_NON_GLOBAL = IP4_RFC1918_ADDRESSES + IP4_NON_ROUTABLE
 
-IP4_ALISES = {
+IP4_ALIASES = {
     "A": IP4_CLASS_A,
     "B": IP4_CLASS_B,
     "C": IP4_CLASS_C,
@@ -213,7 +213,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
 
     parser.add_argument(
         "-l",
-        "--list-alises",
+        "--list-aliases",
         help="List IP aliases and exit. Alises can be used in filters. Supports -m/--mask-type flag.",
         action="store_true",
     )
@@ -226,7 +226,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         exit(0)
 
     """If just listing the classes, print and exit"""
-    if args.list_alises:
+    if args.list_aliases:
         delimiter = ", "
         print(
             "Recognised address aliases."
@@ -235,7 +235,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
             + NEWLINE
             + RULE * 2,
         )
-        for ipclass, ipvalue in IP4_ALISES.items():
+        for ipclass, ipvalue in IP4_ALIASES.items():
             print(
                 f"{' ' * (8 - len(ipclass))}{ipclass}: "
                 f"{delimiter.join(format_address(i, args.mask_type) for i in ipvalue)}"
@@ -286,8 +286,8 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     includes = []
     if args.include_filter is not None:
         for address in args.include_filter:
-            if address in IP4_ALISES.keys():
-                includes.extend(IP4_ALISES.get(address))
+            if address in IP4_ALIASES.keys():
+                includes.extend(IP4_ALIASES.get(address))
             else:
                 try:
                     includes.append(ipaddress.ip_network(address))
@@ -300,8 +300,8 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     excludes = []
     if args.exclude_filter is not None:
         for address in args.exclude_filter:
-            if address in IP4_ALISES.keys():
-                excludes.extend(IP4_ALISES.get(address))
+            if address in IP4_ALIASES.keys():
+                excludes.extend(IP4_ALIASES.get(address))
             else:
                 try:
                     excludes.append(ipaddress.ip_network(address))
