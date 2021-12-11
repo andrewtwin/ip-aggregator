@@ -23,7 +23,7 @@ VERSION = "v0.5.0"
 
 import ipaddress
 import argparse
-import sys
+from sys import stderr, stdin
 import re
 
 
@@ -224,7 +224,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     """Populate subnets to process"""
     subnets = []
     if args.stdin:
-        for line in sys.stdin:
+        for line in stdin:
             read_subnets = re.findall(IP4_REGEX, line)
             for address in read_subnets:
                 try:
@@ -232,7 +232,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
                 except ValueError:
                     print(
                         f"WARNING: Address {address} from stdin is not a valid IPv4 address or network, ignoring",
-                        file=sys.stderr,
+                        file=stderr,
                     )
 
     """Check for IP range otherwise assume subnet"""
@@ -298,7 +298,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         if args.notquiet:
             print(
                 "Not aggregating subnets as requested." + NEWLINE + RULE,
-                file=sys.stderr,
+                file=stderr,
             )
         """Remove duplciate subnets"""
         if args.unique:
