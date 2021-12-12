@@ -1,5 +1,7 @@
 v0.6.3
 - Formatting and spelling in help.
+- Cleaner output formatting.
+- Aliases now work in place of regular subnets.
 
 v0.6.2
 - All filtering now happens on the input, before aggregation.

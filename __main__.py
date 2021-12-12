@@ -19,17 +19,17 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-VERSION = "v0.6.2"
+VERSION = "v0.6.3"
 
 import ipaddress
 import argparse
-from sys import stderr, stdin
+from sys import stderr, stdin, exit as sysexit
 import re
 
 
 """Formatting Constants"""
 NEWLINE = "\n"
-RULE = "=" * 18
+RULE = "-" * 18
 
 """Regex Definitions"""
 SEPERATOR = r"[\D]"
@@ -112,7 +112,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     input_args.add_argument(
         "-s",
         "--stdin",
-        help="Extract addresses from stdin (only IPv4 addresses supported).",
+        help="Extract addresses from stdin (only IPv4 addresses supported, aliases not supported).",
         action="store_true",
     )
 
@@ -214,7 +214,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     parser.add_argument(
         "-l",
         "--list-aliases",
-        help="List IP aliases and exit. Alises can be used in filters. Supports -m/--mask-type flag.",
+        help="List IP aliases and exit. Alises can be used in place of regular addresses. Supports -m/--mask-type flag.",
         action="store_true",
     )
 
@@ -223,7 +223,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     """If displaying version and licence, print and exit"""
     if args.version:
         print(f"{VERSION}" + LICENCE)
-        exit(0)
+        sysexit(0)
 
     """If just listing the classes, print and exit"""
     if args.list_aliases:
@@ -231,7 +231,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         print(
             "Recognised address aliases."
             + NEWLINE
-            + "These can be used alongside regular addresses in filters:"
+            + "These can be used alongside regular addresses:"
             + NEWLINE
             + RULE * 2,
         )
@@ -240,7 +240,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
                 f"{' ' * (8 - len(ipclass))}{ipclass}: "
                 f"{delimiter.join(format_address(i, args.mask_type) for i in ipvalue)}"
             )
-        exit(0)
+        sysexit(0)
 
     delimiter = args.output_delimiter
 
@@ -269,18 +269,39 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
                 )
                 subnets.extend(subnet_range)
             except ValueError:
-                exit(
-                    f"Supplied argument {subnet} are not a valid IPv4 or IPv6 addresses."
+                print(
+                    f"Supplied argument {subnet} are not a valid IPv4 or IPv6 addresses.",
+                    file=stderr,
                 )
+                sysexit(2)
         else:
-            try:
-                subnets.append(ipaddress.ip_network(subnet))
-            except ValueError:
-                exit(f"Supplied argument {subnet} is not a valid IPv4 or IPv6 network.")
+            if subnet in IP4_ALIASES.keys():
+                subnets.extend(IP4_ALIASES.get(subnet))
+            else:
+                try:
+                    subnets.append(ipaddress.ip_network(subnet))
+                except ValueError:
+                    print(
+                        f"Supplied argument {subnet} is not a valid IPv4 or IPv6 network.",
+                        file=stderr,
+                    )
+                    sysexit(2)
 
     """If there are no subnets to operate on exit with an error"""
     if len(subnets) < 1:
-        exit("No subnets found to aggregate")
+        print("No subnets found to aggregate", file=stderr)
+        sysexit(1)
+
+    """Print subnets being processed"""
+    if args.notquiet:
+        print(
+            f"Input {len(subnets)} addresses: "
+            + NEWLINE
+            + f"{delimiter.join(format_address(i, args.mask_type) for i in subnets)}"
+            + NEWLINE
+            + RULE,
+            file=stderr,
+        )
 
     """Populate includes list"""
     includes = []
@@ -292,9 +313,11 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
                 try:
                     includes.append(ipaddress.ip_network(address))
                 except ValueError:
-                    exit(
-                        f"Supplied argument include {address} is not a valid IPv4 or IPv6 network."
+                    print(
+                        f"Supplied argument include {address} is not a valid IPv4 or IPv6 network.",
+                        file=stderr,
                     )
+                    sysexit(2)
 
     """Populate excludes list"""
     excludes = []
@@ -306,16 +329,11 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
                 try:
                     excludes.append(ipaddress.ip_network(address))
                 except ValueError:
-                    exit(
-                        f"Supplied argument exclude {address} is not a valid IPv4 or IPv6 network."
+                    print(
+                        f"Supplied argument exclude {address} is not a valid IPv4 or IPv6 network.",
+                        file=stderr,
                     )
-    if args.notquiet:
-        print(
-            f"Input {len(subnets)} addresses: "
-            + f"{delimiter.join(format_address(i, args.mask_type) for i in subnets)}"
-            + NEWLINE
-            + RULE
-        )
+                    sysexit(2)
 
     """Start processing subnets
     Duplicates can be removed before filters applied
@@ -336,6 +354,12 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     if len(includes) > 0:
         included_subnets = []
         include_subnets = aggregate_subnets(includes)
+        if args.notquiet:
+            print(
+                "Including only addresses in: "
+                + f"{', '.join(format_address(i, args.mask_type) for i in include_subnets)}",
+                file=stderr,
+            )
         for include in include_subnets:
             for subnet in subnets:
                 if subnet.subnet_of(include):
@@ -348,6 +372,12 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     if len(excludes) > 0:
         exclude_subnets = aggregate_subnets(excludes)
         not_excluded_subnets = []
+        if args.notquiet:
+            print(
+                "Excluding addresses in: "
+                + f"{', '.join(format_address(i, args.mask_type) for i in exclude_subnets)}",
+                file=stderr,
+            )
         for subnet in filtered_subnets:
             exclude_subnet = False
             for exclude in exclude_subnets:
@@ -362,7 +392,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     if args.no_aggregate:
         if args.notquiet:
             print(
-                "Not aggregating subnets as requested." + NEWLINE + RULE,
+                "Not aggregating subnets as requested.",
                 file=stderr,
             )
         processed_subnets = filtered_subnets
@@ -376,15 +406,16 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         processed_subnets.sort(reverse=True)
 
     """Output addresses"""
+    if (args.no_aggregate or len(includes) > 0 or len(excludes) > 0) and args.notquiet:
+        print(f"{RULE}", file=stderr)
     if args.count:
         print(f"{len(processed_subnets)}")
     elif len(processed_subnets) > 0:
+        if args.notquiet:
+            print(f"Output {len(processed_subnets)} addresses: ", file=stderr)
         print(
             f"{delimiter.join(format_address(i, args.mask_type) for i in processed_subnets)}"
         )
-
-    if args.notquiet:
-        print(RULE + NEWLINE + f"{len(processed_subnets)} subnets total")
 
 
 def aggregate_subnets(subnets) -> list:
