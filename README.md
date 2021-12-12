@@ -63,7 +63,7 @@ Input 4 addresses:
 192.168.3.0/24
 ------------------
 Output 1 addresses:
-192.168.0.0/22{}
+192.168.0.0/22
 ```
 
 With alternate masks:
