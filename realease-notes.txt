@@ -1,5 +1,6 @@
 v0.6.3
 - Formatting and spelling in help.
+- Claner output formatting.
 - Aliases now work in place of regular subnets.
 
 v0.6.2
