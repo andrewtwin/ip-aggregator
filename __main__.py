@@ -237,7 +237,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         )
         for ipclass, ipvalue in IP4_ALIASES.items():
             print(
-                f"{' ' * (8 - len(ipclass))}{ipclass}: "
+                f"{ipclass.rjust(8)}: "
                 f"{delimiter.join(format_address(i, args.mask_type) for i in ipvalue)}"
             )
         sysexit(0)
