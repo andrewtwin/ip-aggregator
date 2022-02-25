@@ -46,7 +46,7 @@ output options:
   -u, --unique          Remove duplicates from the output, redundant without -A/--no-aggregate.
   -c, --count           Only output the count of the networks/IPs.
 
-v0.6.3
+v0.6.4
 ```
 ## Installation
 Download the python zipapp from the [releases](https://github.com/andrewtwin/ip-aggregator/releases) page.
