@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-VERSION = "v0.6.3"
+VERSION = "v0.6.4"
 
 import ipaddress
 import argparse
@@ -237,7 +237,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         )
         for ipclass, ipvalue in IP4_ALIASES.items():
             print(
-                f"{' ' * (8 - len(ipclass))}{ipclass}: "
+                f"{ipclass.rjust(8)}: "
                 f"{delimiter.join(format_address(i, args.mask_type) for i in ipvalue)}"
             )
         sysexit(0)
