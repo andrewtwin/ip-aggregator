@@ -165,7 +165,7 @@ Copyright (C) 2024 Andrew Twin - GNU GPLv3 - see version for more information.""
     format_args.add_argument(
         "-y",
         "--yaml",
-        help="Output as YAML list, with N spaces padding",
+        help="Output as YAML list, with N spaces indent",
         type=int,
         default=-1,
     )
