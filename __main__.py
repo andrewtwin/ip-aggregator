@@ -28,6 +28,7 @@ import re
 
 
 """Formatting Constants"""
+SPACE = " "
 NEWLINE = "\n"
 RULE = "-" * 18
 
@@ -423,9 +424,17 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     elif len(processed_subnets) > 0:
         if args.notquiet:
             print(f"Output {len(processed_subnets)} addresses: ", file=stderr)
-        print(
-            f"{delimiter.join(format_address(i, args.mask_type) for i in processed_subnets)}"
-        )
+        if args.yaml >= 0:
+            for subnet in processed_subnets:
+                print(
+                    SPACE * args.yaml
+                    + "- "
+                    + format_address(subnet, args.mask_type)
+                )
+        else:
+            print(
+                f"{delimiter.join(format_address(i, args.mask_type) for i in processed_subnets)}"
+            )
 
 
 def aggregate_subnets(subnets) -> list:
