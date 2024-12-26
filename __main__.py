@@ -151,12 +151,22 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         dest="notquiet",
     )
 
-    output_args.add_argument(
+    format_args = output_args.add_mutually_exclusive_group(required=False)
+
+    format_args.add_argument(
         "-d",
         "--output-delimiter",
         type=str,
         help="Sets the output delimeter, default is a new line.",
         default="\n",
+    )
+
+    format_args.add_argument(
+        "-y",
+        "--yaml",
+        type=bool,
+        help="Output as YAML list, default no",
+        default=False
     )
 
     output_args.add_argument(
