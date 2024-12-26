@@ -425,12 +425,11 @@ Copyright (C) 2024 Andrew Twin - GNU GPLv3 - see version for more information.""
         if args.notquiet:
             print(f"Output {len(processed_subnets)} addresses: ", file=stderr)
         if args.yaml >= 0:
+            indent_chars = SPACE * args.yaml
             for subnet in processed_subnets:
                 print(
-                    SPACE * args.yaml
-                    + "- '"
-                    + format_address(subnet, args.mask_type)
-                    +"'"
+                    indent_chars
+                    + f"- '{format_address(subnet, args.mask_type)}'"
                 )
         else:
             print(
