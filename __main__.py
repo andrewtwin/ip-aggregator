@@ -230,9 +230,6 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
 
     args = parser.parse_args()
 
-    if args.yaml >= 0:
-        print(args.yaml)
-
     """If displaying version and licence, print and exit"""
     if args.version:
         print(f"{VERSION}" + LICENCE)
