@@ -428,8 +428,9 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
             for subnet in processed_subnets:
                 print(
                     SPACE * args.yaml
-                    + "- "
+                    + "- '"
                     + format_address(subnet, args.mask_type)
+                    +"'"
                 )
         else:
             print(
