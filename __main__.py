@@ -97,7 +97,7 @@ def main() -> None:
         prog="ip-aggregator",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description="""Extract, filter, sort, and aggregate subnets.
-Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""",
+Copyright (C) 2024 Andrew Twin - GNU GPLv3 - see version for more information.""",
         epilog=f"{VERSION}",
     )
 
@@ -165,7 +165,7 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     format_args.add_argument(
         "-y",
         "--yaml",
-        help="Output as YAML list, with N padding",
+        help="Output as YAML list, with N spaces padding",
         type=int,
         default=-1,
     )
