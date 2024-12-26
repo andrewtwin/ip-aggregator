@@ -5,18 +5,17 @@ Does the opposite of [ip-deaggregator](https://github.com/andrewtwin/ip-deaggreg
 
 ## Usage
 ```
-usage: ip-aggregator [-h] [-s] [-f INCLUDE_FILTER] [-F EXCLUDE_FILTER] [-q] [-d OUTPUT_DELIMITER]
-                     [-m {prefix,net,wildcard}] [-S] [-R] [-A] [-u] [-c] [-V] [-l]
+usage: ip-aggregator [-h] [-s] [-f INCLUDE_FILTER] [-F EXCLUDE_FILTER] [-q] [-d OUTPUT_DELIMITER | -y YAML] [-m {prefix,net,wildcard}] [-S] [-R] [-A] [-u] [-c] [-V]
+                     [-l]
                      [subnet ...]
 
 Extract, filter, sort, and aggregate subnets.
-Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.
+Copyright (C) 2024 Andrew Twin - GNU GPLv3 - see version for more information.
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -V, --version         Print version and licence information and exit
-  -l, --list-aliases    List IP aliases and exit. Alises can be used in place of regular addresses. Supports -m/--mask-
-                        type flag.
+  -l, --list-aliases    List IP aliases and exit. Alises can be used in place of regular addresses. Supports -m/--mask-type flag.
 
 input options:
   How to provide input.
@@ -27,18 +26,19 @@ input options:
 filter options:
   Filering of input networks, includes are processed before excludes.
 
-  -f INCLUDE_FILTER, --include-filter INCLUDE_FILTER
+  -f, --include-filter INCLUDE_FILTER
                         Filter results to include subnets of a network. Multiple filters can be specified.
-  -F EXCLUDE_FILTER, --exclude-filter EXCLUDE_FILTER
+  -F, --exclude-filter EXCLUDE_FILTER
                         Filter results to exclude subnets of a network. Multiple filters can be specified.
 
 output options:
   How to display output.
 
   -q, --quiet           Only produce output, no other information.
-  -d OUTPUT_DELIMITER, --output-delimiter OUTPUT_DELIMITER
+  -d, --output-delimiter OUTPUT_DELIMITER
                         Sets the output delimeter, default is a new line.
-  -m {prefix,net,wildcard}, --mask-type {prefix,net,wildcard}
+  -y, --yaml YAML       Output as YAML list, with N spaces indent
+  -m, --mask-type {prefix,net,wildcard}
                         Use prefix length (default), net mask, or wildcard mask.
   -S, --sort            Sort the output, ascending order.
   -R, --reverse-sort    Sort the output, decending order.
@@ -46,7 +46,7 @@ output options:
   -u, --unique          Remove duplicates from the output, redundant without -A/--no-aggregate.
   -c, --count           Only output the count of the networks/IPs.
 
-v0.6.4
+v0.7.0
 ```
 ## Installation
 Download the python zipapp from the [releases](https://github.com/andrewtwin/ip-aggregator/releases) page.
@@ -107,6 +107,20 @@ Just the output:
 ```
 echo '192.168.0.0/24,192.168.2.0/24' | ip-aggregator -s 192.168.1.0/24 192.168.3.0/24 -q
 192.168.0.0/22
+```
+
+As a YAML list with 2 space indent:
+```
+ip-aggregator -y2 10.0.0.1 172.16.0.1 192.168.0.1
+Input 3 addresses:
+10.0.0.1/32
+172.16.0.1/32
+192.168.0.1/32
+------------------
+Output 3 addresses:
+  - '10.0.0.1/32'
+  - '172.16.0.1/32'
+  - '192.168.0.1/32'
 ```
 
 Extract subnets and addresses from text:

@@ -1,7 +1,7 @@
 SYNOPSYS = """ip-aggregator - Extract, filter, sort, and aggregate IPs from subnets into larger supernets."""
 
 LICENCE = """
-Copyright (C) 2021 Andrew Twin
+Copyright (C) 2024 Andrew Twin
 
 https://github.com/andrewtwin/ip-aggregator
 
@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-VERSION = "v0.6.4"
+VERSION = "v0.7.0"
 
 import ipaddress
 import argparse
@@ -28,6 +28,7 @@ import re
 
 
 """Formatting Constants"""
+SPACE = " "
 NEWLINE = "\n"
 RULE = "-" * 18
 
@@ -96,7 +97,7 @@ def main() -> None:
         prog="ip-aggregator",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description="""Extract, filter, sort, and aggregate subnets.
-Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""",
+Copyright (C) 2024 Andrew Twin - GNU GPLv3 - see version for more information.""",
         epilog=f"{VERSION}",
     )
 
@@ -151,12 +152,22 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
         dest="notquiet",
     )
 
-    output_args.add_argument(
+    format_args = output_args.add_mutually_exclusive_group(required=False)
+
+    format_args.add_argument(
         "-d",
         "--output-delimiter",
         type=str,
         help="Sets the output delimeter, default is a new line.",
         default="\n",
+    )
+
+    format_args.add_argument(
+        "-y",
+        "--yaml",
+        help="Output as YAML list, with N spaces indent",
+        type=int,
+        default=-1,
     )
 
     output_args.add_argument(
@@ -413,9 +424,18 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     elif len(processed_subnets) > 0:
         if args.notquiet:
             print(f"Output {len(processed_subnets)} addresses: ", file=stderr)
-        print(
-            f"{delimiter.join(format_address(i, args.mask_type) for i in processed_subnets)}"
-        )
+        if args.yaml >= 0:
+            for subnet in processed_subnets:
+                print(
+                    SPACE * args.yaml
+                    + "- '"
+                    + format_address(subnet, args.mask_type)
+                    +"'"
+                )
+        else:
+            print(
+                f"{delimiter.join(format_address(i, args.mask_type) for i in processed_subnets)}"
+            )
 
 
 def aggregate_subnets(subnets) -> list:

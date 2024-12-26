@@ -136,3 +136,4 @@ dmypy.json
 
 # Testing Files
 test-file
+.DS_Store
