@@ -1,7 +1,7 @@
 SYNOPSYS = """ip-aggregator - Extract, filter, sort, and aggregate IPs from subnets into larger supernets."""
 
 LICENCE = """
-Copyright (C) 2021 Andrew Twin
+Copyright (C) 2024 Andrew Twin
 
 https://github.com/andrewtwin/ip-aggregator
 
@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-VERSION = "v0.6.4"
+VERSION = "v0.7.0"
 
 import ipaddress
 import argparse
