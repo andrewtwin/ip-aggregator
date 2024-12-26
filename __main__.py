@@ -164,9 +164,9 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     format_args.add_argument(
         "-y",
         "--yaml",
-        type=bool,
-        help="Output as YAML list, default no",
-        default=False
+        help="Output as YAML list, with N padding",
+        type=int,
+        default=-1,
     )
 
     output_args.add_argument(
@@ -229,6 +229,9 @@ Copyright (C) 2021 Andrew Twin - GNU GPLv3 - see version for more information.""
     )
 
     args = parser.parse_args()
+
+    if args.yaml >= 0:
+        print(args.yaml)
 
     """If displaying version and licence, print and exit"""
     if args.version:
