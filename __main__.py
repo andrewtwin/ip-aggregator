@@ -171,6 +171,14 @@ Copyright (C) 2024 Andrew Twin - GNU GPLv3 - see version for more information.""
     )
 
     output_args.add_argument(
+        "-Q",
+        "--quote",
+        help="Wrap addresses in QUOTE characters",
+        type=str,
+        default="",
+    )
+
+    output_args.add_argument(
         "-m",
         "--mask-type",
         help="Use prefix length (default), net mask, or wildcard mask.",
@@ -429,11 +437,11 @@ Copyright (C) 2024 Andrew Twin - GNU GPLv3 - see version for more information.""
             for subnet in processed_subnets:
                 print(
                     indent_chars
-                    + f"- '{format_address(subnet, args.mask_type)}'"
+                    + f"- {format_address(subnet, args.mask_type, args.quote)}"
                 )
         else:
             print(
-                f"{delimiter.join(format_address(i, args.mask_type) for i in processed_subnets)}"
+                f"{delimiter.join(format_address(i, args.mask_type, args.quote) for i in processed_subnets)}"
             )
 
 
@@ -445,17 +453,19 @@ def aggregate_subnets(subnets) -> list:
     return list(ipaddress.collapse_addresses(subnets))
 
 
-def format_address(address, mask="prefix") -> str:
+def format_address(address, mask="prefix", quotes="") -> str:
     """return a string
 
-    format the network
+    format the network address
     """
     if mask == "net":
-        return address.with_netmask
+        network =  address.with_netmask
     elif mask == "wildcard":
-        return address.with_hostmask
+        network =  address.with_hostmask
     else:
-        return address.with_prefixlen
+        network =  address.with_prefixlen
+
+    return quotes + network + quotes
 
 
 if __name__ == "__main__":
