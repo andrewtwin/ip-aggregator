@@ -1,3 +1,8 @@
+import ipaddress
+import argparse
+import re
+from sys import stderr, stdin, exit as sysexit
+
 SYNOPSYS = """ip-aggregator - Extract, filter, sort, and aggregate IPs from subnets into larger supernets."""
 
 LICENCE = """
@@ -20,12 +25,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 VERSION = "v0.7.1"
-
-import ipaddress
-import argparse
-from sys import stderr, stdin, exit as sysexit
-import re
-
 
 """Formatting Constants"""
 SPACE = " "
