@@ -456,14 +456,14 @@ def aggregate_subnets(subnets) -> list:
 def format_address(address, mask="prefix", quotes="") -> str:
     """return a string
 
-    format the network address
+    format the network address string with optional quoting
     """
     if mask == "net":
-        network =  address.with_netmask
+        network = address.with_netmask
     elif mask == "wildcard":
-        network =  address.with_hostmask
+        network = address.with_hostmask
     else:
-        network =  address.with_prefixlen
+        network = address.with_prefixlen
 
     return quotes + network + quotes
 
