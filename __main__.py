@@ -40,7 +40,8 @@ CAPTURE_END = r")"
 END = r"(?=" + SEPERATOR + ")"
 
 # IPV4
-# IP4_OCTET = r"(?:2[0-5]{,2}|1[0-9]{,2}|[0-9])" # Can be fooled into getting partial but valid addresses
+# IP4_OCTET = r"(?:2[0-5]{,2}|1[0-9]{,2}|[0-9])"
+# Can be fooled into getting partial but valid addresses
 IP4_OCTET = r"(?:[\d]{1,3})"
 IP4_DOT = r"\."
 IP4_MASK = (
@@ -89,8 +90,8 @@ IP4_ALIASES = {
 
 
 def main() -> None:
-    # no return
-    # Main function.
+    '''no return
+    Main function.'''
     parser = argparse.ArgumentParser(
         prog="ip-aggregator",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -440,19 +441,20 @@ Copyright (C) 2024 Andrew Twin - GNU GPLv3 - see version for more information.""
                 )
         else:
             print(
-                f"{delimiter.join(format_address(i, args.mask_type, args.quote) for i in processed_subnets)}"
+                f"{delimiter.join(format_address(i, args.mask_type, args.quote) \
+                                  for i in processed_subnets)}"
             )
 
 
 def aggregate_subnets(subnets) -> list:
-    # return a list
-    # aggregate subnets
+    '''return a list
+    aggregate subnets '''
     return list(ipaddress.collapse_addresses(subnets))
 
 
 def format_address(address, mask="prefix", quotes="") -> str:
-    # return a string
-    # format the network address string with optional quoting
+    '''return a string
+    format the network address string with optional quoting'''
     if mask == "net":
         network = address.with_netmask
     elif mask == "wildcard":
